@@ -22,17 +22,28 @@ endif::backend-html5[]
 
 == Pflichtenheft "Was mache ich"
 
-
 === Ausgangssituation
 
-Die HTL Leonding ist eine HTL im oö. Zentralraum mit ca. 1000 Schülern und den Fachabteilungen Medientechnik, Informatik, ....
+Der Hype für Retro und Vintage ist so hoch wie nie zuvor. Es gibt viele Neueinsteiger und Interessierte,
+die Schallplatten sammeln möchten oder bereits ein paar besitzen. Der Vinylumsatz in Österreich lag 2022 bei
+10,6 Millionen Euro. In den USA, dem größten Vinylmarkt lag er bei 1,2 Mrd. US-Dollar.
+
+https://www.wko.at/videos/lookaut/GStbmZU-z9Q/schallplatten-comeback-warum-vinyl-im-streaming-zeitalter-boomt[Daten lt. WKO]
 
 === Istzustand
-----
-Beschreibung der speziellen Situation zB in der Abteilung
-----
+
+Das Verwalten von großen Samlungen ist schwierig und verbraucht viel Zeit. Man findet oft seine Schallplatten nicht,
+weiß nicht genau über den Wert oder die Größe der gesamten Sammlung Bescheid. Es besteht die Gefahr, Duplikate zu kaufen.
+
+Es gibt zwar Software, die dieses Problem behandelt, aber selbst die neuesten Programme sind mindestens zehn Jahre alt.
+
 === Problemstellung
+
+Man braucht ein zuverlässiges System um seine Schallplatten zu organisieren und verwalten. Es gilt eine Lösung
+zu finden für das physische als auch software Seite des systems.
+
 === Aufgabenstellung
+
 ==== Funktionale Anforderungen
 
 [plantuml,wireframe,png]
