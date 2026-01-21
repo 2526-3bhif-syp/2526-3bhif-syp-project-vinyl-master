@@ -1,0 +1,12 @@
+= Backlog
+
+== User Stories
+
+- As a [ ] I want to be able to [ ] because [ ]
+
+- As a user I want to be able to look up if i have a certain vinyl in my collection because I need to find it.
+
+- As a user I want to be able to be able to see all relevant metadata of all my vinyls because I dont want to have to look it up.
+
+- As a user I want to be able to add / delete vinyls because I will buy and sell pieces of my collection.
+

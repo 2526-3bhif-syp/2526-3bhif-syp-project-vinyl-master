@@ -20,7 +20,7 @@ endif::backend-html5[]
 // print the toc here (not at the default position)
 //toc::[]
 
-== Pflichtenheft "Was mache ich"
+== Pflichtenheft
 
 === Ausgangssituation
 
@@ -41,6 +41,9 @@ Es gibt zwar Software, die dieses Problem behandelt, aber selbst die neuesten Pr
 
 Man braucht ein zuverlässiges System um seine Schallplatten zu organisieren und verwalten. Es gilt eine Lösung
 zu finden für das physische als auch software Seite des systems.
+
+Ein regal mit sensoren das sender in den platten verpackung ließt und auf command leuchtet eine lampe auf der position
+der schallplatte auf.
 
 === Aufgabenstellung
 
@@ -86,8 +89,6 @@ mit User-Stories (definiert in YouTrack)
 [Test prototype 2] starts at [Prototype completed]'s end
 @endgantt
 ----
-
-
 
 * link:minutes-of-meeting.html[Protokollvorlage]
 * link:demo.html[Demo]
