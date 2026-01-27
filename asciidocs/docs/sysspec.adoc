@@ -32,7 +32,7 @@ https://www.wko.at/videos/lookaut/GStbmZU-z9Q/schallplatten-comeback-warum-vinyl
 
 === Istzustand
 
-Das Verwalten von großen Samlungen ist schwierig und verbraucht viel Zeit. Man findet oft seine Schallplatten nicht,
+Das Verwalten von großen Sammlung ist schwierig und verbraucht viel Zeit. Man findet oft seine Schallplatten nicht,
 weiß nicht genau über den Wert oder die Größe der gesamten Sammlung Bescheid. Es besteht die Gefahr, Duplikate zu kaufen.
 
 Es gibt zwar Software, die dieses Problem behandelt, aber selbst die neuesten Programme sind mindestens zehn Jahre alt.
@@ -42,7 +42,7 @@ Es gibt zwar Software, die dieses Problem behandelt, aber selbst die neuesten Pr
 Man braucht ein zuverlässiges System um seine Schallplatten zu organisieren und verwalten. Es gilt eine Lösung
 zu finden für das physische als auch software Seite des systems.
 
-Ein regal mit sensoren das sender in den platten verpackung ließt und auf command leuchtet eine lampe auf der position
+Ein regal mit sensoren das sender in den platten verpackung ließt und auf command leuchtet eine Lampe auf der position
 der schallplatte auf.
 
 === Aufgabenstellung
@@ -60,11 +60,14 @@ Superclass:  | { "java.lang.Object " | [Browse...] }
 }
 @endsalt
 ----
+
 ==== Nichtfunktionale Anforderungen (NFA)
-=== Ziele
-=== Mengengerüst
+
+=== Ziele [Wirkung]
+
 === Rahmenbedingungen
 zB Vorgaben vom Auftraggeber
+
 
 == Entwurf "Wie mache ich es"
 === Systemarchitektur
