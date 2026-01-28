@@ -18,7 +18,7 @@ icon:home[link=https://htl-leonding.github.io/]
 endif::backend-html5[]
 
 // print the toc here (not at the default position)
-//toc::[]
+//toc::##[]##
 
 == Pflichtenheft
 
@@ -34,8 +34,6 @@ https://www.wko.at/videos/lookaut/GStbmZU-z9Q/schallplatten-comeback-warum-vinyl
 
 Das Verwalten von großen Sammlung ist schwierig und verbraucht viel Zeit. Man findet oft seine Schallplatten nicht,
 weiß nicht genau über den Wert oder die Größe der gesamten Sammlung Bescheid. Es besteht die Gefahr, Duplikate zu kaufen.
-
-Es gibt zwar Software, die dieses Problem behandelt, aber selbst die neuesten Programme sind mindestens zehn Jahre alt.
 
 === Problemstellung
 
