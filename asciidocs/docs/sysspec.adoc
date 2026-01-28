@@ -40,33 +40,50 @@ Es gibt zwar Software, die dieses Problem behandelt, aber selbst die neuesten Pr
 === Problemstellung
 
 Man braucht ein zuverlässiges System um seine Schallplatten zu organisieren und verwalten. Es gilt eine Lösung
-zu finden für das physische als auch software Seite des systems.
-
-Ein regal mit sensoren das sender in den platten verpackung ließt und auf command leuchtet eine Lampe auf der position
-der schallplatte auf.
+zu finden für das physische als auch software Seite des systems, da das Verwalten der Schallplatten mit einer reinen
+Software Lösung nicht effective möglich ist.
 
 === Aufgabenstellung
 
 ==== Funktionale Anforderungen
 
-[plantuml,wireframe,png]
-----
-@startsalt
-{
-Name         | "                 "
-Modifiers:   | { (X) public | () default | () private | () protected
-	            [] abstract | [] final   | [] static }
-Superclass:  | { "java.lang.Object " | [Browse...] }
-}
-@endsalt
-----
+    Katalogisierung: Optionale manuelle Eingabe oder Import von Metadaten.
+
+    Barcode-Scanner: Kamera-Funktion zum Scannen des EAN/UPC-Codes auf dem Cover zur automatischen Datenerfassung.
+
+    Standort-Management: Zuweisung eines physischen Lagerortes (z. B. "Regal A, Fach 3") für jede Platte.
+
+    Sammlungs-Statistik: Dashboard mit Visualisierung des Gesamtwerts (via API-Anbindung, z.B. Discogs), Genre-Verteilung und Anzahl der Platten.
+
+    Wunschliste & Dubletten-Check: Warnsystem beim Hinzufügen von Platten, die bereits vorhanden sind; Führen einer "Wantlist".
+
+    Such- und Filterfunktion: Schnelles Finden von Alben nach verschiedenen Kriterien.
+
+https://www.vinylherstellung.de/ean-label-code/[EAN/UPC - Codes]
 
 ==== Nichtfunktionale Anforderungen (NFA)
 
+    Benutzbarkeit: Das Interface muss modern, minimalistisch und intuitiv bedienbar sein.
+
+    Performance: Die Suche in einer Sammlung von bis zu 5.000 Datensätzen muss unter 200ms dauern.
+
+    Offline-Fähigkeit: Die Basis-Suche muss auch ohne Internetverbindung (z.B. im Keller, ...) funktionieren.
+
 === Ziele [Wirkung]
 
+    Effizienz: Die Zeit für das Suchen einer bestimmten Platte im physischen Archiv soll erheblich reduziert werden.
+
+    Finanzielle Übersicht: Der Nutzer hat einen Überblick über den Marktwert seiner Investition.
+
+    Fehlkauf-Vermeidung: Senkung der Fehlkäufe (Dubletten).
+
+    Community-Anschluss: Vorbereitung für den Export/Teilen der Sammlung mit Gleichgesinnten.
+
 === Rahmenbedingungen
-zB Vorgaben vom Auftraggeber
+
+    Schnittstellen: Nutzung der Discogs-API zur Abfrage von Metadaten und Marktpreisen. (Max. 60 req pro Minute)
+
+    Zeitplan: Ein Prototyp (MVP) muss innerhalb von 3 Monaten einsatzbereit sein.
 
 
 == Entwurf "Wie mache ich es"
