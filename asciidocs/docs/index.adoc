@@ -1,4 +1,4 @@
 = Index page
-ifndef::imagesdir[:imagesdir: images]
 
-image::img.png[]
+
+== syspec: https://2526-3bhif-syp.github.io/2526-3bhif-syp-project-vinyl-master/sysspec#_gantt_diagramm
