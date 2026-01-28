@@ -1,6 +1,6 @@
 = Vinyl Master
 1.0.0, {docdate}:
-ifndef::imagesdir[:imagesdir: images]
+ifndef::imagesdir[:imagesdir: ../../img]
 //:toc-placement!:  // prevents the generation of the doc at this position, so it can be printed afterwards
 :sourcedir: ../src/main/java
 :icons: font
@@ -57,6 +57,8 @@ Software Lösung nicht effective möglich ist.
     Such- und Filterfunktion: Schnelles Finden von Alben nach verschiedenen Kriterien.
 
 https://www.vinylherstellung.de/ean-label-code/[EAN/UPC - Codes]
+
+image::use-case-diagram-1.png[use case diagram]
 
 ==== Nichtfunktionale Anforderungen (NFA)
 
