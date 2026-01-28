@@ -1,6 +1,5 @@
-= My Project
-firstname lastname
-1.0.0, {docdate}: Some notes
+= Vinyl Master
+1.0.0, {docdate}:
 ifndef::imagesdir[:imagesdir: images]
 //:toc-placement!:  // prevents the generation of the doc at this position, so it can be printed afterwards
 :sourcedir: ../src/main/java
