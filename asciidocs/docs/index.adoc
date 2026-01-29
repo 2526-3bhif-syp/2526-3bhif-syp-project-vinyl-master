@@ -1,4 +1,3 @@
 = Index page
-
-
-== syspec: https://2526-3bhif-syp.github.io/2526-3bhif-syp-project-vinyl-master/sysspec#_gantt_diagramm
+== System Specification
+You can find the project docs here: link:https://2526-3bhif-syp.github.io/2526-3bhif-syp-project-vinyl-master/sysspec[sysspec]
