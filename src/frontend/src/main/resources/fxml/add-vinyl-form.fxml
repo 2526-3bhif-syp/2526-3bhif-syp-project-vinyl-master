@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<StackPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+           fx:controller="at.htl.leonding.vinylmaster.ui.controller.AddVinylFormController"
+           alignment="CENTER"
+           style="-fx-background-color: rgba(0, 0, 0, 0.5);">
+    
+    <VBox fx:id="formContainer" spacing="15" alignment="TOP_CENTER" maxWidth="500" maxHeight="500"
+          style="-fx-background-color: white; -fx-background-radius: 10; -fx-padding: 30;">
+        
+        <Label text="Add New Vinyl" style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
+        
+        <Separator/>
+        
+        <VBox spacing="5">
+            <Label text="Title *" style="-fx-font-weight: bold;"/>
+            <TextField fx:id="titleField" promptText="Enter vinyl title"/>
+        </VBox>
+        
+        <VBox spacing="5">
+            <Label text="Artist *" style="-fx-font-weight: bold;"/>
+            <TextField fx:id="artistField" promptText="Enter artist name"/>
+        </VBox>
+        
+        <VBox spacing="5">
+            <Label text="Genre" style="-fx-font-weight: bold;"/>
+            <ComboBox fx:id="genreComboBox" promptText="Select or enter genre" 
+                      prefWidth="440" editable="true"/>
+        </VBox>
+        
+        <VBox spacing="5">
+            <Label text="Year *" style="-fx-font-weight: bold;"/>
+            <TextField fx:id="yearField" promptText="Enter year (e.g., 1975)"/>
+        </VBox>
+        
+        <VBox spacing="5">
+            <Label text="Price (€)" style="-fx-font-weight: bold;"/>
+            <TextField fx:id="priceField" promptText="Enter price in euros"/>
+        </VBox>
+        
+        <Label text="* Required fields" style="-fx-font-size: 10px; -fx-text-fill: gray;"/>
+        
+        <HBox spacing="10" alignment="CENTER_RIGHT">
+            <padding>
+                <Insets top="10"/>
+            </padding>
+            <Button fx:id="cancelButton" text="Cancel" 
+                    style="-fx-background-color: #f44336; -fx-text-fill: white; -fx-padding: 10 20;"/>
+            <Button fx:id="saveButton" text="Save" 
+                    style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-padding: 10 20;"/>
+        </HBox>
+    </VBox>
+</StackPane>

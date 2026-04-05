@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.layout.*?>
+
+<StackPane fx:id="rootPane" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+           fx:controller="at.htl.leonding.vinylmaster.ui.controller.MainViewController">
+    <VBox fx:id="mainContent" spacing="10" style="-fx-background-color: white;">
+        <padding>
+            <Insets top="20" right="20" bottom="20" left="20"/>
+        </padding>
+        
+        <HBox alignment="CENTER_LEFT" spacing="10">
+            <Label text="Vinyl Collection" style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button fx:id="addVinylButton" text="+ Add Vinyl" 
+                    style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 10 20;"/>
+        </HBox>
+        
+        <ListView fx:id="vinylListView" VBox.vgrow="ALWAYS"/>
+    </VBox>
+</StackPane>

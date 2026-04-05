@@ -36,3 +36,16 @@ Temporary Items
 dist/
 docs/slides/revealjs
 .idea/
+
+# Environment variables
+.env
+
+# Gradle
+.gradle/
+build/
+*/build/
+
+# Java
+*.class
+*.jar
+!gradle-wrapper.jar

@@ -1,3 +1,205 @@
-=== Vinylmaster Index Page on gh-pages:
+# Vinyl Master - Vinyl Collection Management System
+
+## Overview
+
+Vinyl Master is a JavaFX desktop application for managing vinyl record collections. It provides an intuitive interface for cataloging, organizing, and tracking vinyl records with features like duplicate detection, genre management, and detailed metadata storage.
+
+## Prerequisites
+
+- **Java 21** (or later)
+- **Docker** (for PostgreSQL database)
+- **Gradle 8.11+** (wrapper included)
+
+## Project Structure
+
+This is a multi-module Gradle project with clear separation between backend and frontend:
+
+```
+vinylmaster/
+├── src/
+│   ├── backend/                    # Backend module (data layer + business logic)
+│   │   └── src/main/java/at/htl/leonding/vinylmaster/
+│   │       ├── config/            # Database configuration (HikariCP)
+│   │       ├── model/             # Entity classes (Vinyl)
+│   │       ├── repository/        # Data access layer (JDBC)
+│   │       └── service/           # Business logic layer
+│   └── frontend/                   # Frontend module (JavaFX UI)
+│       └── src/main/
+│           ├── java/at/htl/leonding/vinylmaster/ui/
+│           │   ├── controller/   # JavaFX controllers
+│           │   └── Main.java     # Application entry point
+│           └── resources/
+│               ├── fxml/         # FXML view definitions
+│               └── images/       # UI assets
+├── docker-compose.yml             # PostgreSQL database setup
+├── .env                           # Database configuration
+└── build.gradle.kts              # Root build configuration
+```
+
+## Setup Instructions
+
+### 1. Clone the Repository
+
+```bash
+git clone <repository-url>
+cd 2526-3bhif-syp-project-vinyl-master
+```
+
+### 2. Start the Database
+
+Start the PostgreSQL database using Docker Compose:
+
+```bash
+docker-compose up -d
+```
+
+This will:
+- Start PostgreSQL on port 5432
+- Create database `vinylmaster`
+- Use credentials: username=`app`, password=`app`
+- Run Flyway migrations automatically on first application start
+
+### 3. Build the Project
+
+```bash
+./gradlew build
+```
+
+This will:
+- Compile backend and frontend modules
+- Run all unit tests
+- Create distribution packages
+
+### 4. Run the Application
+
+```bash
+./gradlew :frontend:run
+```
+
+Or build and run the standalone JAR:
+
+```bash
+./gradlew :frontend:shadowJar
+java -jar src/frontend/build/libs/frontend-1.0.0-all.jar
+```
+
+## Development
+
+### Running Tests
+
+```bash
+# Run all tests
+./gradlew test
+
+# Run only backend tests
+./gradlew :backend:test
+
+# Run with detailed output
+./gradlew test --info
+```
+
+### Database Management
+
+**Check database status:**
+```bash
+docker-compose ps
+```
+
+**Stop database:**
+```bash
+docker-compose down
+```
+
+**Reset database (WARNING: deletes all data):**
+```bash
+docker-compose down -v
+docker-compose up -d
+```
+
+### Configuration
+
+Database connection settings are in `.env` file:
+```
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=vinylmaster
+DB_USER=app
+DB_PASSWORD=app
+```
+
+## Features
+
+### Current Features (v1.0.0)
+
+- ✅ Add vinyl records with metadata (title, artist, genre, year, price)
+- ✅ View collection in a scrollable list
+- ✅ Frontend validation (required fields, data types)
+- ✅ Backend validation (duplicate detection, data integrity)
+- ✅ Genre dropdown with user-definable genres
+- ✅ Price tracking in Euros
+- ✅ Duplicate prevention (same title + artist + year)
+
+### Validation Rules
+
+**Required Fields:**
+- Title
+- Artist
+- Year (must be between 1900-2100)
+
+**Optional Fields:**
+- Genre (user-definable dropdown)
+- Price (must be non-negative if provided)
+
+### Architecture
+
+**Backend (Service + Repository Pattern):**
+- `Repository Layer`: JDBC-based data access with HikariCP connection pooling
+- `Service Layer`: Business logic including validation and duplicate checking
+- `Flyway`: Database migrations for schema versioning
+
+**Frontend (JavaFX + FXML):**
+- Model-View-Controller pattern
+- FXML for UI layout
+- On-blur validation for immediate user feedback
+- Modal overlay for add vinyl form
+
+## Technology Stack
+
+- **Language**: Java 21
+- **UI Framework**: JavaFX 23
+- **Database**: PostgreSQL (latest)
+- **Connection Pool**: HikariCP 6.2
+- **Migration Tool**: Flyway 11.1
+- **Build Tool**: Gradle 8.11
+- **Testing**: JUnit 5
+- **Containerization**: Docker
+
+## Documentation
+
+For detailed system specifications and project documentation, visit:
+https://2526-3bhif-syp.github.io/2526-3bhif-syp-project-vinyl-master/
+
+## Troubleshooting
+
+**Database connection failed:**
+- Ensure Docker is running
+- Check database container: `docker-compose logs postgres`
+- Verify `.env` file exists with correct credentials
+
+**Application won't start:**
+- Ensure Java 21 is installed: `java --version`
+- Check Gradle build: `./gradlew build --info`
+
+**Tests failing:**
+- Database must be running for integration tests
+- Reset database: `docker-compose down -v && docker-compose up -d`
+
+## License
+
+This project is developed as part of the HTL Leonding System Engineering course.
+
 ---
-https://2526-3bhif-syp.github.io/2526-3bhif-syp-project-vinyl-master/   
+
+**Development Team**: 3BHIF SYP 2025/26  
+**Institution**: HTL Leonding
+   
