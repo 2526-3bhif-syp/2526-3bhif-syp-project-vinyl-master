@@ -2,3 +2,6 @@
 
 == System Specification
 You can find the project docs here: link:https://2526-3bhif-syp.github.io/2526-3bhif-syp-project-vinyl-master/sysspec[sysspec]
+
+== How to get started
+A guide to the basics of this project: link:../../README.adoc[readme]
