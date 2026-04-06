@@ -7,16 +7,18 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
-import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 
+import java.util.Optional;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 public class MainViewController {
@@ -30,6 +32,7 @@ public class MainViewController {
     private StackPane rootPane;
     
     @FXML
+    @SuppressWarnings("unused") // referenced from FXML
     private VBox mainContent;
     
     private final VinylServiceImpl vinylService;
@@ -70,7 +73,11 @@ public class MainViewController {
             addVinylFormPane.setStyle("-fx-background-color: rgba(0, 0, 0, 0.5);");
             rootPane.getChildren().add(addVinylFormPane);
         } catch (IOException e) {
-            e.printStackTrace();
+            Alert err = new Alert(Alert.AlertType.ERROR);
+            err.setTitle("Error");
+            err.setHeaderText("Could not open Add Vinyl form");
+            err.setContentText(e.getMessage());
+            err.showAndWait();
         }
     }
 
@@ -82,12 +89,13 @@ public class MainViewController {
         loadVinyls(); // Refresh the list
     }
 
-    private static class VinylListCell extends javafx.scene.control.ListCell<Vinyl> {
+    private class VinylListCell extends javafx.scene.control.ListCell<Vinyl> {
         private final HBox content;
         private final ImageView imageView;
         private final Label titleLabel;
         private final Label artistLabel;
         private final Label priceLabel;
+        private final Button deleteButton;
 
         public VinylListCell() {
             super();
@@ -105,11 +113,15 @@ public class MainViewController {
             priceLabel = new Label();
             priceLabel.setStyle("-fx-font-size: 12px;");
             
+            deleteButton = new Button("Delete");
+            deleteButton.setStyle("-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-size: 11px;");
+            deleteButton.setMinWidth(70);
+
             VBox textBox = new VBox(5, titleLabel, artistLabel);
             textBox.setPadding(new Insets(0, 10, 0, 10));
             HBox.setHgrow(textBox, Priority.ALWAYS);
             
-            content = new HBox(10, imageView, textBox, priceLabel);
+            content = new HBox(10, imageView, textBox, priceLabel, deleteButton);
             content.setPadding(new Insets(10));
             content.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
         }
@@ -121,8 +133,13 @@ public class MainViewController {
                 setGraphic(null);
             } else {
                 try {
-                    Image image = new Image(getClass().getResourceAsStream("/images/vinyl-placeholder.png"));
-                    imageView.setImage(image);
+                    InputStream is = getClass().getResourceAsStream("/images/vinyl-placeholder.png");
+                    if (is != null) {
+                        Image image = new Image(is);
+                        imageView.setImage(image);
+                    } else {
+                        imageView.setImage(null);
+                    }
                 } catch (Exception e) {
                     imageView.setImage(null);
                 }
@@ -131,6 +148,31 @@ public class MainViewController {
                 artistLabel.setText(vinyl.getArtist());
                 priceLabel.setText(vinyl.getPrice() != null ? vinyl.getPrice() + " €" : "");
                 
+                // configure delete action for this cell's vinyl
+                deleteButton.setOnAction(event -> {
+                    Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                    alert.setTitle("Delete Vinyl");
+                    alert.setHeaderText("Confirm deletion");
+                    alert.setContentText(String.format("Are you sure you want to delete '%s' by %s?",
+                            vinyl.getTitle(), vinyl.getArtist()));
+
+                    Optional<ButtonType> result = alert.showAndWait();
+                    if (result.isPresent() && result.get() == ButtonType.OK) {
+                        try {
+                            // call service to delete and refresh list
+                            // Using outer class's vinylService and loadVinyls()
+                            MainViewController.this.vinylService.deleteVinyl(vinyl.getId());
+                            MainViewController.this.loadVinyls();
+                        } catch (Exception ex) {
+                            Alert err = new Alert(Alert.AlertType.ERROR);
+                            err.setTitle("Deletion failed");
+                            err.setHeaderText("Could not delete vinyl");
+                            err.setContentText(ex.getMessage());
+                            err.showAndWait();
+                        }
+                    }
+                });
+
                 setGraphic(content);
             }
         }
