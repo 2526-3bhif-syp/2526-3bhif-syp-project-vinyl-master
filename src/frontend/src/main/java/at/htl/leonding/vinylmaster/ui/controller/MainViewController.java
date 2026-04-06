@@ -35,9 +35,13 @@ public class MainViewController {
     @SuppressWarnings("unused") // referenced from FXML
     private VBox mainContent;
     
+    @FXML
+    private javafx.scene.control.TextField searchField;
+
     private final VinylServiceImpl vinylService;
     private final ObservableList<Vinyl> vinylList;
     private Pane addVinylFormPane;
+    private javafx.collections.transformation.FilteredList<Vinyl> filteredVinyls;
 
     public MainViewController() {
         this.vinylService = new VinylServiceImpl();
@@ -47,13 +51,34 @@ public class MainViewController {
     @FXML
     public void initialize() {
         setupListView();
+        setupSearch();
         loadVinyls();
         addVinylButton.setOnAction(event -> showAddVinylForm());
     }
 
     private void setupListView() {
-        vinylListView.setItems(vinylList);
+        // wrap the observable list with a FilteredList so we can filter by search
+        filteredVinyls = new javafx.collections.transformation.FilteredList<>(vinylList, p -> true);
+        vinylListView.setItems(filteredVinyls);
         vinylListView.setCellFactory(listView -> new VinylListCell());
+    }
+
+    private void setupSearch() {
+        // case-insensitive substring match on title, artist, or genre
+        searchField.textProperty().addListener((obs, oldVal, newVal) -> {
+            String filter = newVal == null ? "" : newVal.trim().toLowerCase();
+            if (filter.isEmpty()) {
+                filteredVinyls.setPredicate(v -> true);
+            } else {
+                filteredVinyls.setPredicate(v -> {
+                    if (v == null) return false;
+                    if (v.getTitle() != null && v.getTitle().toLowerCase().contains(filter)) return true;
+                    if (v.getArtist() != null && v.getArtist().toLowerCase().contains(filter)) return true;
+                    if (v.getGenre() != null && v.getGenre().toLowerCase().contains(filter)) return true;
+                    return false;
+                });
+            }
+        });
     }
 
     private void loadVinyls() {
