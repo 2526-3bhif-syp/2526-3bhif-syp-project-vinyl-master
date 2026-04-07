@@ -1,0 +1,315 @@
+# Issue #1: Add Vinyl to Collection - Requirements Discussion
+
+## Issue Details
+**Title:** add vinyl to collection 
+**Status:** Open 
+**URL:** https://github.com/2526-3bhif-syp/2526-3bhif-syp-project-vinyl-master/issues/1
+
+---
+
+## Your Requirements
+
+Please describe what you want for this implementation:
+
+As a collector I want to manually add a vinyl record with details such as title, artist, genre and additional metadata so that I can manage my collection
+
+Acceptance Criteria
+    A button or option to manually add a new record
+    An input form is necessary to complete with title,artist, genre and other fields
+    Validation of the meta data
+    Vinyl is added and saved in the overview / collection
+    (The user can optionally assign a storage location (shelf, box))
+
+### 1. Scope
+(What should be included? What's out of scope?)
+Since this is the very first issue, we will have to lay the groundwork for this project. It will be a java-fx project, we will use a postgreSQL database as primary db.
+
+The scope is:   1. Create the Java-FX project with gradle. 
+                2. Create the db in Posgress.
+                3. Add the ability to add vinyls.
+
+### 2. Technology Stack
+(What technologies/frameworks should be used?)
+Java, Java-FX for the UI, PostgreSQL as the db.
+
+Aditionally, the db has to be dockered.
+
+### 3. Implementation Details
+(Any specific requirements, constraints, or preferences?)
+Split the App in UI / Backend. Make the division clear.
+
+### 4. Additional Context
+(Anything else I should know?)
+
+---
+
+## Clarification Questions
+
+### Project Structure & Architecture
+1. **Project location**: Should the JavaFX project be created in the existing `src/` directory, or should we create a separate structure (e.g., `backend/`, `frontend/`)?
+
+In the src/ folder, make 2 new dirs: backend/ and frontend/
+
+2. **Gradle structure**: Single-module Gradle project or multi-module (separate modules for UI and backend)?
+
+Since we are a rather large team, i prefer a multi-module approach to further seperate backend and frontend. 
+
+3. **Backend architecture**: What pattern should the backend follow? (e.g., DAO pattern, Repository pattern, Service layer architecture?)
+
+Service + Repository
+
+For a management system, this is the most reliable stack.
+
+The Repository Layer: Handles the data. 
+The Service Layer: Where Management Logic lives.
+
+4. **JavaFX version**: Which JavaFX version should be used? (e.g., JavaFX 17, 19, 21?)
+
+The latest avaliable.
+
+5. **Java version**: Which Java version should the project target? (e.g., Java 17 LTS, Java 21 LTS?)
+
+The latest avaliable.
+
+### Database Details
+6. **Database connection**: Should we use a connection pool? If yes, which library? (e.g., HikariCP?)
+
+Yes, use a Pool. Stick with HikariCP, since its the industry-standard.
+
+7. **Database schema**: 
+   - What specific fields should the `vinyl` table have beyond title, artist, genre? (e.g., release year, label, country, condition, barcode/EAN, purchase date, purchase price?)
+        Stick with the basics for now, we will add more details later.
+   - Should storage location be a separate table or just fields in the vinyl table?
+        Skip over that part for now, I just want the ability to add a vinyl with the basic attributes.
+   - Do we need any initial schema migration tool? (e.g., Flyway, Liquibase?)
+        Simplicity is everything, let's stick with Flyway.
+
+8. **Docker setup**: 
+   - Should there be a `docker-compose.yml` for easy database startup?
+    Yes.
+   - Any specific PostgreSQL version preference?
+    Latest.
+   - Should sample data be included for development?
+    No. For now our goal is just to make it work. We will mock-up data at a later point in time.
+
+### UI/UX Details
+9. **UI framework within JavaFX**: Plain JavaFX, or should we use any additional UI libraries? (e.g., ControlsFX, MaterialFX?)
+
+Just plain JavaFX.
+
+10. **Form validation**: What specific validations are needed?
+    - Required fields: title and artist only, or more?
+    - Any format validations? (e.g., year must be 4 digits, genre from predefined list?)
+    - How should validation errors be displayed to the user?
+
+When the user presses the "create" button, a new menu should open, where he can input the basic atrributes like titel, band, year, price, ... The form validation must happen in the frontend, any more complex validation (like duplicats) will be handled by the service layer.
+
+11. **Main window structure**: 
+    - Should the "add vinyl" form be in a separate window/dialog, or embedded in the main view?
+    A new Menu should appear, it cannot be a new Window though.
+    - What should the "overview/collection" view look like? (table, cards, list?)
+    The overview is a list of all saved vynls in the main/start view.
+    It should be stacked over one-another with the titel and a small picture being the main focus. Just use a generic vynal as the standart picture for now.
+    
+12. **Storage location (optional field)**:
+    - Free text input or structured? (e.g., dropdowns for shelf, box?)
+    Structured for things like date or times. Free for any Names.
+    - If structured, should there be predefined locations or user-defined?
+    Structured can only be a calendar for example.
+
+### Data Persistence & Flow
+13. **Save behavior**: When should the vinyl be saved?
+    - Immediately on form submit?
+    - Should there be a confirmation message after successful save?
+    - What happens on validation failure or database error?
+    
+    There should be a save button on the bottom right, Upon pressing, all validation in the service layer will be started, if it fails, a error dialog will pop up, that explains which field is the problem. Basic validation in the frontend should happen right after the cursor leaves the text field for input. If an error happens, the field should be marked red.
+
+14. **Collection view refresh**: After adding a vinyl, should the collection view automatically refresh/update?
+
+Yes, The overview will update every time the view is loaded or a change was made.
+
+### Build & Development Setup
+15. **Build configuration**: 
+    - Any specific Gradle plugins needed? (e.g., for JavaFX, shadow jar?)
+    - Should there be a runnable JAR target?
+
+org.openjfx.javafxplugin - for UI
+com.gradleup.shadow - golden standart for deployment.
+
+16. **Configuration management**: How should database connection details be configured? (properties file, environment variables, both?)
+
+env file in the root of the proj.
+
+17. **Testing**: Should unit tests be included in this first issue, or deferred? If included, which testing framework? (JUnit 5?)
+
+Unit tests have to be included, use Junit, latest version.
+
+### Documentation
+18. **README updates**: Should the README.adoc be updated with setup/run instructions for the JavaFX application?
+
+Yes, update the Readme.
+
+19. **Code documentation**: Any specific documentation standards? (Javadoc required?)
+
+After every session you will summarize the work that has been done and update the copilot-instructuions file.
+---
+
+## Follow-up Questions
+
+### Database Schema Clarification
+20. **Vinyl table fields**: You mentioned "basic attributes like titel, band, year, price, ..." - can you confirm the complete list of fields for the initial vinyl table?
+    - Suggested based on your input: `id`, `title`, `artist` (band), `genre`, `year`, `price`
+    - Any other fields needed? (e.g., `condition`, `format` like LP/EP/Single, `label`, `country`?)
+    
+the following list should be included: 
+
+id - db
+title - text/free
+artist - text/free
+genre - user-defined/drop-down
+year - standard/calender-widget
+price - in Euros €
+
+### UI/Form Details
+21. **Form fields**: Which fields should be in the "add vinyl" form?
+    - Based on Q20, which attributes should be user-fillable in the form?
+    - Should all fields be required, or only title and artist?
+
+Required are: titel, artist, year
+The db will automatically choose an id.
+
+22. **Generic vinyl image**: Should I include a placeholder image in the project, or just show a colored rectangle/icon initially?
+
+Include a placeholder "default" image in a seperate folder, we can add the feature to let users add theyre own images in the future. 
+
+23. **Main view navigation**: You mentioned "a new menu should appear" for adding vinyl. Can you clarify:
+    - Does this mean the main view should switch/navigate to show the add form (replacing the list view temporarily)?
+    - Or should it be a modal overlay that appears on top of the list?
+    - How does the user get back to the list view after adding/canceling?
+
+A new menu should appear over the List, after adding/cancelling the list should be updated and reloaded and the menu should disappear.
+
+24. **List view details**: For the vinyl list in the main view, what should be displayed for each vinyl item?
+    - Title + small picture (confirmed)
+    - Should artist/band also be shown?
+    - Any other info? (year, genre?)
+
+show artist as well as price. the layout should look something like this:
+
+| img | titel | artist              | price |
+
+### Validation Details
+25. **Frontend validation specifics**: What validations should happen in the frontend when cursor leaves the field?
+    - Title/Artist: Required (not empty)?
+    - Year: Must be a valid 4-digit number?
+    - Price: Must be a valid number/decimal?
+    - Genre: Free text or selection from predefined list?
+
+All of these are correct, genre should be a dropdown that can be configured in a seperate menu aswell.
+
+26. **Service layer validation**: You mentioned duplicate checking - what constitutes a duplicate?
+    - Same title + artist?
+    - Same title + artist + year?
+    - Something else?
+
+Same title + artist + year
+
+### Project Structure
+27. **Package naming**: What should the base package name be? (e.g., `at.htl.leonding.vinylmaster`, `com.vinylmaster`, etc.)
+
+at.htl.leonding.vinylmaster
+
+28. **Multi-module Gradle structure**: Should the modules be:
+    - `backend/` and `frontend/` as separate Gradle subprojects?
+    - Or a different structure like `vinyl-backend/` and `vinyl-frontend/`?
+
+Just plain backend / frontend
+
+### Docker & Database
+29. **Database name and credentials**: What should be the default database name, username, and password in docker-compose and .env?
+    - Suggested: db=`vinylmaster`, user=`vinyl`, password=`vinyl` (for development)
+
+db=`vinylmaster`, user=`app`, password=`app`
+
+30. **Docker compose services**: Should docker-compose.yml include:
+    - Just PostgreSQL?
+    - Or also pgAdmin for database management?
+
+Just PostgreSQL.
+
+---
+
+## Requirements Summary - Final Confirmation
+
+Before I create the implementation plan, let me confirm I understand everything correctly:
+
+### Technical Stack
+- **Java**: Latest LTS (Java 21)
+- **JavaFX**: Latest version (23+)
+- **Build Tool**: Gradle (multi-module: backend + frontend)
+- **Database**: PostgreSQL (latest, Dockerized)
+- **Connection Pool**: HikariCP
+- **Migration Tool**: Flyway
+- **Testing**: JUnit 5 (latest)
+- **Gradle Plugins**: `org.openjfx.javafxplugin`, `com.gradleup.shadow`
+
+### Project Structure
+```
+src/
+├── backend/           (Gradle submodule)
+│   └── at.htl.leonding.vinylmaster
+│       ├── repository/
+│       └── service/
+└── frontend/          (Gradle submodule)
+    └── at.htl.leonding.vinylmaster.ui
+```
+
+### Database Schema (Initial)
+**Table: vinyl**
+- `id` (Primary Key, auto-generated)
+- `title` (TEXT, required)
+- `artist` (TEXT, required)
+- `genre` (TEXT, optional, user-defined dropdown)
+- `year` (INTEGER, required)
+- `price` (DECIMAL, optional, in Euros)
+
+**Docker Setup:**
+- Database: `vinylmaster`
+- User: `app`
+- Password: `app`
+- No pgAdmin, just PostgreSQL
+
+### UI/UX Flow
+1. **Main View (Collection Overview)**
+   - List of vinyls with layout: `| image | title | artist | price |`
+   - Button to "Add New Vinyl"
+   - Uses placeholder/default image (stored in project)
+
+2. **Add Vinyl Form** (modal overlay on main view)
+   - Required fields: title, artist, year
+   - Optional fields: genre (dropdown), price
+   - Frontend validation: on-blur (field turns red if invalid)
+   - Save button (bottom right)
+   - Cancel option to return to list
+   - After save/cancel: return to updated list view
+
+3. **Validation Rules**
+   - Frontend: title/artist not empty, year = 4-digit number, price = valid decimal
+   - Backend (Service): duplicate check (title + artist + year)
+   - Error handling: dialog with specific field error
+
+### Genre Management
+- Genre is a dropdown with user-configurable options
+- Can be configured in a separate menu (future work, but structure should support it)
+
+### Configuration
+- `.env` file in project root for database connection details
+
+### Documentation
+- Update README.adoc with setup/run instructions
+- Update `.github/copilot-instructions.md` after session
+
+---
+
+**Is this understanding correct? If yes, I'll proceed to create the implementation plan. If anything needs correction, please let me know.**
