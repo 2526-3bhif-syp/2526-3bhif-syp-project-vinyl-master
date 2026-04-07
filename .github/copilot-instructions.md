@@ -289,11 +289,10 @@ asciidocs/
 ├── docs/                    # Main documentation
 │   ├── index.adoc          # Landing page
 │   ├── sysspec.adoc        # System specification (German)
-│   ├── product-backlog.adoc
-│   ├── minutes-of-meeting.adoc
+│   ├── product-backlog.adoc # User stories
+│   ├── images/             # Documentation images
+│   │   └── use-case-diagram-1.png
 │   └── themes/             # Custom themes
-├── slides/                  # reveal.js presentations
-│   └── demo.adoc
 └── scripts/                 # Conversion scripts (DO NOT TOUCH)
     ├── docker-convert.sh
     └── docker-convert-util.sh
