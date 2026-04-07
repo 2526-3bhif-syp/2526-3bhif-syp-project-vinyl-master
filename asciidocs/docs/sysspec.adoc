@@ -109,6 +109,4 @@ mit User-Stories (definiert in YouTrack)
 @endgantt
 ----
 
-* link:minutes-of-meeting.html[Protokollvorlage]
-* link:demo.html[Demo]
 
