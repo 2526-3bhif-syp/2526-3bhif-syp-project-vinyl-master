@@ -4,4 +4,4 @@
 You can find the project docs here: link:https://2526-3bhif-syp.github.io/2526-3bhif-syp-project-vinyl-master/sysspec[sysspec]
 
 == How to get started
-A guide to the basics of this project: link:../../README.adoc[readme]
+A guide to the basics of this project: link:https://github.com/2526-3bhif-syp/2526-3bhif-syp-project-vinyl-master/tree/main#vinyl-master---vinyl-collection-management-system[readme]
