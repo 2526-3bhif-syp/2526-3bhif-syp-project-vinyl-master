@@ -5,11 +5,21 @@ import at.htl.leonding.vinylmaster.service.DuplicateVinylException;
 import at.htl.leonding.vinylmaster.service.GenreService;
 import at.htl.leonding.vinylmaster.service.ValidationException;
 import at.htl.leonding.vinylmaster.service.VinylServiceImpl;
+import at.htl.leonding.vinylmaster.ui.image.CoverImageService;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.Dragboard;
+import javafx.scene.input.TransferMode;
 import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
+import javafx.stage.Window;
 
+import java.io.File;
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.nio.file.Path;
 import java.util.List;
 
 public class AddVinylFormController {
@@ -36,22 +46,43 @@ public class AddVinylFormController {
     
     @FXML
     private Button cancelButton;
+
+    @FXML
+    private VBox imageDropZone;
+
+    @FXML
+    private Button chooseImageButton;
+
+    @FXML
+    private Button clearImageButton;
+
+    @FXML
+    private Label imageFileLabel;
+
+    @FXML
+    private ImageView imagePreview;
     
     private final VinylServiceImpl vinylService;
     private final GenreService genreService;
+    private final CoverImageService coverImageService;
     private MainViewController mainViewController;
+    private File selectedImageFile;
 
     public AddVinylFormController() {
         this.vinylService = new VinylServiceImpl();
         this.genreService = new GenreService();
+        this.coverImageService = new CoverImageService();
     }
 
     @FXML
     public void initialize() {
         loadGenres();
         setupValidation();
+        setupImageSelection();
         saveButton.setOnAction(event -> handleSave());
         cancelButton.setOnAction(event -> handleCancel());
+        chooseImageButton.setOnAction(event -> chooseImageFile());
+        clearImageButton.setOnAction(event -> clearSelectedImage());
     }
 
     private void loadGenres() {
@@ -89,6 +120,76 @@ public class AddVinylFormController {
                 validatePrice();
             }
         });
+    }
+
+    private void setupImageSelection() {
+        imageDropZone.setOnDragOver(event -> {
+            Dragboard dragboard = event.getDragboard();
+            if (dragboard.hasFiles()) {
+                event.acceptTransferModes(TransferMode.COPY);
+            }
+            event.consume();
+        });
+
+        imageDropZone.setOnDragDropped(event -> {
+            Dragboard dragboard = event.getDragboard();
+            boolean success = false;
+            if (dragboard.hasFiles()) {
+                success = handleSelectedImageFile(dragboard.getFiles().getFirst());
+            }
+            event.setDropCompleted(success);
+            event.consume();
+        });
+        updateImagePreview();
+    }
+
+    private void chooseImageFile() {
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle("Choose Cover Image");
+        chooser.getExtensionFilters().add(
+                new FileChooser.ExtensionFilter("Image Files", "*.jpg", "*.jpeg", "*.png")
+        );
+        Window window = formContainer.getScene() != null ? formContainer.getScene().getWindow() : null;
+        File selectedFile = chooser.showOpenDialog(window);
+        if (selectedFile != null) {
+            handleSelectedImageFile(selectedFile);
+        }
+    }
+
+    private boolean handleSelectedImageFile(File file) {
+        if (file == null) {
+            return false;
+        }
+        String filename = file.getName().toLowerCase();
+        if (!(filename.endsWith(".jpg") || filename.endsWith(".jpeg") || filename.endsWith(".png"))) {
+            showError("Invalid Image", "Only .jpg, .jpeg, and .png files are allowed.");
+            return false;
+        }
+        try {
+            coverImageService.validateImageFile(file);
+            selectedImageFile = file;
+            updateImagePreview();
+            return true;
+        } catch (IOException e) {
+            showError("Invalid Image", e.getMessage());
+            return false;
+        }
+    }
+
+    private void clearSelectedImage() {
+        selectedImageFile = null;
+        updateImagePreview();
+    }
+
+    private void updateImagePreview() {
+        if (selectedImageFile == null) {
+            imageFileLabel.setText("No image selected");
+            imagePreview.setImage(null);
+            return;
+        }
+        imageFileLabel.setText(selectedImageFile.getName());
+        Image image = new Image(selectedImageFile.toURI().toString(), 64, 64, true, true, false);
+        imagePreview.setImage(image);
     }
 
     private boolean validateTitle() {
@@ -187,7 +288,17 @@ public class AddVinylFormController {
                 vinyl.setPrice(new BigDecimal(priceText.trim()));
             }
             
-            vinylService.addVinyl(vinyl);
+            Vinyl savedVinyl = vinylService.addVinyl(vinyl);
+            if (selectedImageFile != null) {
+                try {
+                    String relativeCoverPath = coverImageService.saveCover(selectedImageFile, savedVinyl.getId());
+                    savedVinyl.setImagePath(relativeCoverPath);
+                    vinylService.updateVinyl(savedVinyl);
+                } catch (IOException e) {
+                    vinylService.deleteVinyl(savedVinyl.getId());
+                    throw new RuntimeException("Failed to process selected image: " + e.getMessage(), e);
+                }
+            }
             
             if (mainViewController != null) {
                 mainViewController.closeAddVinylForm();
@@ -198,7 +309,6 @@ public class AddVinylFormController {
             showError("Duplicate Vinyl", e.getMessage());
         } catch (Exception e) {
             showError("Error", "Failed to save vinyl: " + e.getMessage());
-            e.printStackTrace();
         }
     }
 

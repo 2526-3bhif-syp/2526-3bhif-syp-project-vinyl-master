@@ -313,3 +313,89 @@ src/
 ---
 
 **Is this understanding correct? If yes, I'll proceed to create the implementation plan. If anything needs correction, please let me know.**
+
+---
+
+## Session Notes - 2026-04-12
+
+### What we did in this session
+- Reviewed GitHub issue **#2: browse collection** and mapped each acceptance criterion against the current implementation.
+- Implemented UI updates for browse flow without removing existing features:
+  - Kept add/search/delete behavior.
+  - Added a details panel shown when selecting a record.
+  - Included visible metadata (title, artist, genre, year, price) in details.
+  - Added editable **storage location** and **notes** fields per selected record (session-level state).
+  - Added genre display in the list row.
+- Switched placeholder image from PNG to the new JPG resource.
+- Diagnosed run failure root cause (`:frontend:run --info`): database connection refused because PostgreSQL is not reachable; also found `.env` parsing issue affecting docker-compose.
+- Optimized image loading performance by caching pre-scaled placeholder images (list + detail) instead of reloading/decoding repeatedly.
+
+### Clarification Questions for "Add/Change Image per Record"
+1. **Persistence scope:** Should the selected image be persisted permanently in the database, or is session-only storage acceptable?
+All images HAVE to be persisted.
+2. **Storage model (if persistent):** Do you want to store:
+   - a filesystem path to the image, or
+   - the binary image data (BLOB) in PostgreSQL?
+Only store the path to the image, i want the users to be able to change the image themselves by just dropping a new image in the folder and naming it correctly
+3. **UI placement:** Where should the button live?
+   - in the details panel (`Change Image`),
+   - in each list row,
+   - or both?
+The edit button should live in the side panel only, there also needs to be an option for the user to add an image at the time of creation.
+4. **Selection flow:** Should image selection use a native file chooser dialog restricted to image files (`.jpg`, `.jpeg`, `.png`)?
+Yes, the selection flow should use a native FileChooser restricted to .jpg, .jpeg, and .png files, 
+after which the application will programmatically process the input to ensure the final cover is forced to a 256x256 
+resolution and saved in .jpg format for database consistency.
+5. **Fallback behavior:** If a record has no custom image, should we always show the placeholder image?
+Yes.
+6. **Replace behavior:** When changing an existing image, should the previous reference be overwritten immediately after confirmation?
+yes, overwrite the original image with the newly added one.
+7. **Removal behavior:** Do you also want a `Remove Image` action to revert to placeholder?
+Yes, when choosing the change image option or the add image option, a dialog similar to the add vinyl menu should be shown with a drag and drop for the image 
+and an option to clear and revert back to the placeholder
+8. **Image processing:** Should the app auto-resize/compress selected images on save (recommended), and if yes, what max size should be enforced (e.g., 512x512)?
+ref to question 4. the resolution should be forced to 256 by 256
+9. **Validation rules:** What is the maximum allowed file size (MB) for uploaded images?
+1MB
+10. **Data migration:** Is it okay to add a new Flyway migration and extend the `vinyl` model/repository/service now?
+Yes.
+
+---
+
+### Context Validation (Image Feature) - 2026-04-12
+
+#### Confirmed and clear
+- Images must be persisted.
+- Database stores an image path (not BLOB data).
+- Change-image action belongs in the side/details panel.
+- Add-vinyl flow also needs image support at creation time.
+- Use native FileChooser with `.jpg`, `.jpeg`, `.png` filter.
+- Convert/normalize saved covers to `256x256` JPG.
+- Placeholder is used when no custom image exists.
+- Replacing an image should overwrite previous content.
+- Include an option to clear/revert to placeholder.
+- A Flyway migration is approved.
+
+#### Resolved implementation decisions
+1. Path strategy: store relative paths in an app-managed folder.
+2. Naming convention: deterministic per-record filename `vinyl-{id}.jpg`.
+3. 1MB rule: validate source upload size only.
+
+#### Implementation completed
+- Added Flyway migration `V2__add_image_path_to_vinyl.sql` to extend `vinyl` with `image_path`.
+- Extended backend model/repository/service:
+  - `Vinyl` now includes `imagePath`.
+  - `VinylRepositoryImpl` now persists/loads `image_path`.
+  - `VinylService` and `VinylServiceImpl` now support `updateVinyl(...)`.
+- Implemented frontend image processing service:
+  - New `CoverImageService` handles validation, conversion to JPG, center-crop + resize to `256x256`, overwrite, and delete.
+  - Persisted files are stored as relative paths in `covers/vinyl-{id}.jpg`.
+- Updated **Add Vinyl** form:
+  - Added drag & drop image area, file chooser, clear action, preview, and filename display.
+  - Added validation for allowed types (`.jpg/.jpeg/.png`) and max source size (`1MB`).
+  - Added image save during record creation and path persistence.
+- Updated **Details panel**:
+  - Added `Change Image` and `Clear Image` actions for the selected record.
+  - `Change Image` replaces the existing cover and updates DB path.
+  - `Clear Image` removes custom cover and reverts to placeholder.
+- Updated list/detail rendering to use custom cover when available, otherwise placeholder.

@@ -43,6 +43,10 @@
                                 <Label text="Artist:" style="-fx-font-weight: bold;"/>
                                 <Label fx:id="detailArtistValue" text="-"/>
                             </HBox>
+                            <HBox spacing="8">
+                                <Button fx:id="changeImageButton" text="Change Image"/>
+                                <Button fx:id="clearImageButton" text="Clear Image"/>
+                            </HBox>
                         </VBox>
                     </HBox>
 

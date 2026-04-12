@@ -25,6 +25,15 @@ public class VinylServiceImpl implements VinylService {
     }
 
     @Override
+    public Vinyl updateVinyl(Vinyl vinyl) throws ValidationException {
+        if (vinyl.getId() == null) {
+            throw new ValidationException("id", "Id is required for updates");
+        }
+        validateVinyl(vinyl);
+        return vinylRepository.save(vinyl);
+    }
+
+    @Override
     public List<Vinyl> getAllVinyls() {
         return vinylRepository.findAll();
     }

@@ -2,6 +2,7 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
 
 <StackPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
@@ -9,7 +10,7 @@
            alignment="CENTER"
            style="-fx-background-color: rgba(0, 0, 0, 0.5);">
     
-    <VBox fx:id="formContainer" spacing="15" alignment="TOP_CENTER" maxWidth="500" maxHeight="500"
+    <VBox fx:id="formContainer" spacing="15" alignment="TOP_CENTER" maxWidth="500" maxHeight="680"
           style="-fx-background-color: white; -fx-background-radius: 10; -fx-padding: 30;">
         
         <Label text="Add New Vinyl" style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
@@ -40,6 +41,20 @@
         <VBox spacing="5">
             <Label text="Price (€)" style="-fx-font-weight: bold;"/>
             <TextField fx:id="priceField" promptText="Enter price in euros"/>
+        </VBox>
+
+        <VBox spacing="5">
+            <Label text="Cover Image (optional)" style="-fx-font-weight: bold;"/>
+            <VBox fx:id="imageDropZone" spacing="8" alignment="CENTER"
+                  style="-fx-border-color: #bdbdbd; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 12;">
+                <Label text="Drag and drop image here (.jpg/.jpeg/.png, max 1 MB)" wrapText="true"/>
+                <ImageView fx:id="imagePreview" fitWidth="64" fitHeight="64" preserveRatio="true"/>
+                <Label fx:id="imageFileLabel" text="No image selected" style="-fx-text-fill: #616161;"/>
+                <HBox spacing="8" alignment="CENTER">
+                    <Button fx:id="chooseImageButton" text="Choose Image"/>
+                    <Button fx:id="clearImageButton" text="Clear"/>
+                </HBox>
+            </VBox>
         </VBox>
         
         <Label text="* Required fields" style="-fx-font-size: 10px; -fx-text-fill: gray;"/>

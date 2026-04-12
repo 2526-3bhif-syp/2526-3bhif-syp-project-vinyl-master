@@ -10,6 +10,7 @@ public class Vinyl {
     private String genre;
     private Integer year;
     private BigDecimal price;
+    private String imagePath;
 
     public Vinyl() {
     }
@@ -23,12 +24,17 @@ public class Vinyl {
     }
 
     public Vinyl(Long id, String title, String artist, String genre, Integer year, BigDecimal price) {
+        this(id, title, artist, genre, year, price, null);
+    }
+
+    public Vinyl(Long id, String title, String artist, String genre, Integer year, BigDecimal price, String imagePath) {
         this.id = id;
         this.title = title;
         this.artist = artist;
         this.genre = genre;
         this.year = year;
         this.price = price;
+        this.imagePath = imagePath;
     }
 
     public Long getId() {
@@ -79,6 +85,14 @@ public class Vinyl {
         this.price = price;
     }
 
+    public String getImagePath() {
+        return imagePath;
+    }
+
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -101,6 +115,7 @@ public class Vinyl {
                 ", genre='" + genre + '\'' +
                 ", year=" + year +
                 ", price=" + price +
+                ", imagePath='" + imagePath + '\'' +
                 '}';
     }
 }

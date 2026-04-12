@@ -2,6 +2,7 @@ package at.htl.leonding.vinylmaster.ui.controller;
 
 import at.htl.leonding.vinylmaster.model.Vinyl;
 import at.htl.leonding.vinylmaster.service.VinylServiceImpl;
+import at.htl.leonding.vinylmaster.ui.image.CoverImageService;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -15,13 +16,18 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
+import javafx.stage.FileChooser;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
+import javafx.stage.Window;
 
+import java.io.File;
 import java.util.Optional;
 import java.io.IOException;
-import java.io.InputStream;
 import java.math.BigDecimal;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -67,19 +73,33 @@ public class MainViewController {
     @FXML
     private TextArea notesArea;
 
+    @FXML
+    private Button changeImageButton;
+
+    @FXML
+    private Button clearImageButton;
+
     private final VinylServiceImpl vinylService;
+    private final CoverImageService coverImageService;
     private final ObservableList<Vinyl> vinylList;
     private final Map<Long, String> storageLocationByVinylId;
     private final Map<Long, String> notesByVinylId;
+    private final Image listPlaceholderImage;
+    private final Image detailPlaceholderImage;
+    private final Map<String, Image> imageCache;
     private Pane addVinylFormPane;
     private javafx.collections.transformation.FilteredList<Vinyl> filteredVinyls;
     private Vinyl selectedVinyl;
 
     public MainViewController() {
         this.vinylService = new VinylServiceImpl();
+        this.coverImageService = new CoverImageService();
         this.vinylList = FXCollections.observableArrayList();
         this.storageLocationByVinylId = new HashMap<>();
         this.notesByVinylId = new HashMap<>();
+        this.listPlaceholderImage = loadPlaceholderImage(50, 50);
+        this.detailPlaceholderImage = loadPlaceholderImage(64, 64);
+        this.imageCache = new HashMap<>();
     }
 
     @FXML
@@ -107,8 +127,12 @@ public class MainViewController {
     private void setupDetailsPane() {
         storageLocationField.setDisable(true);
         notesArea.setDisable(true);
+        changeImageButton.setDisable(true);
+        clearImageButton.setDisable(true);
         storageLocationField.textProperty().addListener((obs, oldVal, newVal) -> persistSelectedDetails());
         notesArea.textProperty().addListener((obs, oldVal, newVal) -> persistSelectedDetails());
+        changeImageButton.setOnAction(event -> handleChangeImage());
+        clearImageButton.setOnAction(event -> handleClearImage());
         showVinylDetails(null);
     }
 
@@ -190,9 +214,9 @@ public class MainViewController {
 
     private void showVinylDetails(Vinyl vinyl) {
         selectedVinyl = vinyl;
-        detailImageView.setImage(loadPlaceholderImage());
 
         if (vinyl == null) {
+            detailImageView.setImage(detailPlaceholderImage);
             detailTitleValue.setText("-");
             detailArtistValue.setText("-");
             detailGenreValue.setText("-");
@@ -202,9 +226,12 @@ public class MainViewController {
             notesArea.clear();
             storageLocationField.setDisable(true);
             notesArea.setDisable(true);
+            changeImageButton.setDisable(true);
+            clearImageButton.setDisable(true);
             return;
         }
 
+        detailImageView.setImage(loadCoverImage(vinyl, 64, 64));
         detailTitleValue.setText(safeText(vinyl.getTitle()));
         detailArtistValue.setText(safeText(vinyl.getArtist()));
         detailGenreValue.setText(safeText(vinyl.getGenre()));
@@ -217,6 +244,8 @@ public class MainViewController {
         Long vinylId = vinyl.getId();
         storageLocationField.setText(vinylId == null ? "" : storageLocationByVinylId.getOrDefault(vinylId, ""));
         notesArea.setText(vinylId == null ? "" : notesByVinylId.getOrDefault(vinylId, ""));
+        changeImageButton.setDisable(false);
+        clearImageButton.setDisable(vinyl.getImagePath() == null || vinyl.getImagePath().isBlank());
     }
 
     private String safeText(String value) {
@@ -227,11 +256,107 @@ public class MainViewController {
         return price == null ? "-" : price + " €";
     }
 
-    private Image loadPlaceholderImage() {
-        try (InputStream is = getClass().getResourceAsStream("/images/vinyl-placeholder.png")) {
-            return is == null ? null : new Image(is);
-        } catch (Exception e) {
+    private Image loadPlaceholderImage(double width, double height) {
+        URL resourceUrl = getClass().getResource("/images/vinyl-placeholder.jpg");
+        if (resourceUrl == null) {
             return null;
+        }
+        return new Image(resourceUrl.toExternalForm(), width, height, true, true, false);
+    }
+
+    private Image loadCoverImage(Vinyl vinyl, double width, double height) {
+        if (vinyl == null || vinyl.getImagePath() == null || vinyl.getImagePath().isBlank()) {
+            return width <= 50 ? listPlaceholderImage : detailPlaceholderImage;
+        }
+
+        String cacheKey = vinyl.getImagePath() + "|" + (int) width + "x" + (int) height;
+        Image cached = imageCache.get(cacheKey);
+        if (cached != null) {
+            return cached;
+        }
+
+        Path absolutePath = coverImageService.getAbsolutePath(vinyl.getImagePath());
+        if (!Files.exists(absolutePath)) {
+            return width <= 50 ? listPlaceholderImage : detailPlaceholderImage;
+        }
+
+        Image image = new Image(absolutePath.toUri().toString(), width, height, true, true, false);
+        if (!image.isError()) {
+            imageCache.put(cacheKey, image);
+            return image;
+        }
+        return width <= 50 ? listPlaceholderImage : detailPlaceholderImage;
+    }
+
+    private void clearCacheForPath(String relativePath) {
+        if (relativePath == null || relativePath.isBlank()) {
+            return;
+        }
+        imageCache.keySet().removeIf(key -> key.startsWith(relativePath + "|"));
+    }
+
+    private void handleChangeImage() {
+        if (selectedVinyl == null || selectedVinyl.getId() == null) {
+            return;
+        }
+
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle("Change Cover Image");
+        chooser.getExtensionFilters().add(
+                new FileChooser.ExtensionFilter("Image Files", "*.jpg", "*.jpeg", "*.png")
+        );
+        Window window = rootPane.getScene() != null ? rootPane.getScene().getWindow() : null;
+        File selectedFile = chooser.showOpenDialog(window);
+        if (selectedFile == null) {
+            return;
+        }
+
+        try {
+            coverImageService.validateImageFile(selectedFile);
+            String oldPath = selectedVinyl.getImagePath();
+            String newPath = coverImageService.saveCover(selectedFile, selectedVinyl.getId());
+            selectedVinyl.setImagePath(newPath);
+            vinylService.updateVinyl(selectedVinyl);
+            clearCacheForPath(oldPath);
+            clearCacheForPath(newPath);
+            loadVinyls();
+        } catch (Exception e) {
+            Alert err = new Alert(Alert.AlertType.ERROR);
+            err.setTitle("Image update failed");
+            err.setHeaderText("Could not update cover image");
+            err.setContentText(e.getMessage());
+            err.showAndWait();
+        }
+    }
+
+    private void handleClearImage() {
+        if (selectedVinyl == null || selectedVinyl.getId() == null
+                || selectedVinyl.getImagePath() == null || selectedVinyl.getImagePath().isBlank()) {
+            return;
+        }
+
+        Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION);
+        confirmation.setTitle("Clear Cover Image");
+        confirmation.setHeaderText("Remove custom image?");
+        confirmation.setContentText("The record will revert to the default placeholder image.");
+        Optional<ButtonType> response = confirmation.showAndWait();
+        if (response.isEmpty() || response.get() != ButtonType.OK) {
+            return;
+        }
+
+        try {
+            String oldPath = selectedVinyl.getImagePath();
+            coverImageService.deleteCover(oldPath);
+            selectedVinyl.setImagePath(null);
+            vinylService.updateVinyl(selectedVinyl);
+            clearCacheForPath(oldPath);
+            loadVinyls();
+        } catch (Exception e) {
+            Alert err = new Alert(Alert.AlertType.ERROR);
+            err.setTitle("Image remove failed");
+            err.setHeaderText("Could not clear cover image");
+            err.setContentText(e.getMessage());
+            err.showAndWait();
         }
     }
 
@@ -282,7 +407,7 @@ public class MainViewController {
             if (empty || vinyl == null) {
                 setGraphic(null);
             } else {
-                imageView.setImage(loadPlaceholderImage());
+                imageView.setImage(loadCoverImage(vinyl, 50, 50));
                 
                 titleLabel.setText(vinyl.getTitle());
                 artistLabel.setText(vinyl.getArtist());
