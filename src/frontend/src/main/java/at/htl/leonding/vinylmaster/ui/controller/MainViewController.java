@@ -10,6 +10,8 @@ import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
@@ -19,7 +21,10 @@ import javafx.scene.control.ButtonType;
 import java.util.Optional;
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MainViewController {
     @FXML
@@ -38,19 +43,49 @@ public class MainViewController {
     @FXML
     private javafx.scene.control.TextField searchField;
 
+    @FXML
+    private ImageView detailImageView;
+
+    @FXML
+    private Label detailTitleValue;
+
+    @FXML
+    private Label detailArtistValue;
+
+    @FXML
+    private Label detailGenreValue;
+
+    @FXML
+    private Label detailYearValue;
+
+    @FXML
+    private Label detailPriceValue;
+
+    @FXML
+    private TextField storageLocationField;
+
+    @FXML
+    private TextArea notesArea;
+
     private final VinylServiceImpl vinylService;
     private final ObservableList<Vinyl> vinylList;
+    private final Map<Long, String> storageLocationByVinylId;
+    private final Map<Long, String> notesByVinylId;
     private Pane addVinylFormPane;
     private javafx.collections.transformation.FilteredList<Vinyl> filteredVinyls;
+    private Vinyl selectedVinyl;
 
     public MainViewController() {
         this.vinylService = new VinylServiceImpl();
         this.vinylList = FXCollections.observableArrayList();
+        this.storageLocationByVinylId = new HashMap<>();
+        this.notesByVinylId = new HashMap<>();
     }
 
     @FXML
     public void initialize() {
         setupListView();
+        setupDetailsPane();
         setupSearch();
         loadVinyls();
         addVinylButton.setOnAction(event -> showAddVinylForm());
@@ -61,6 +96,20 @@ public class MainViewController {
         filteredVinyls = new javafx.collections.transformation.FilteredList<>(vinylList, p -> true);
         vinylListView.setItems(filteredVinyls);
         vinylListView.setCellFactory(listView -> new VinylListCell());
+        vinylListView.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
+            if (oldVal != null && oldVal != newVal) {
+                persistSelectedDetails();
+            }
+            showVinylDetails(newVal);
+        });
+    }
+
+    private void setupDetailsPane() {
+        storageLocationField.setDisable(true);
+        notesArea.setDisable(true);
+        storageLocationField.textProperty().addListener((obs, oldVal, newVal) -> persistSelectedDetails());
+        notesArea.textProperty().addListener((obs, oldVal, newVal) -> persistSelectedDetails());
+        showVinylDetails(null);
     }
 
     private void setupSearch() {
@@ -82,9 +131,26 @@ public class MainViewController {
     }
 
     private void loadVinyls() {
+        Long previouslySelectedId = selectedVinyl != null ? selectedVinyl.getId() : null;
         vinylList.clear();
         List<Vinyl> vinyls = vinylService.getAllVinyls();
         vinylList.addAll(vinyls);
+
+        if (previouslySelectedId == null) {
+            showVinylDetails(null);
+            return;
+        }
+
+        Vinyl matchingVinyl = vinylList.stream()
+                .filter(v -> previouslySelectedId.equals(v.getId()))
+                .findFirst()
+                .orElse(null);
+
+        if (matchingVinyl != null) {
+            vinylListView.getSelectionModel().select(matchingVinyl);
+        } else {
+            showVinylDetails(null);
+        }
     }
 
     private void showAddVinylForm() {
@@ -114,11 +180,67 @@ public class MainViewController {
         loadVinyls(); // Refresh the list
     }
 
+    private void persistSelectedDetails() {
+        if (selectedVinyl == null || selectedVinyl.getId() == null) {
+            return;
+        }
+        storageLocationByVinylId.put(selectedVinyl.getId(), storageLocationField.getText());
+        notesByVinylId.put(selectedVinyl.getId(), notesArea.getText());
+    }
+
+    private void showVinylDetails(Vinyl vinyl) {
+        selectedVinyl = vinyl;
+        detailImageView.setImage(loadPlaceholderImage());
+
+        if (vinyl == null) {
+            detailTitleValue.setText("-");
+            detailArtistValue.setText("-");
+            detailGenreValue.setText("-");
+            detailYearValue.setText("-");
+            detailPriceValue.setText("-");
+            storageLocationField.clear();
+            notesArea.clear();
+            storageLocationField.setDisable(true);
+            notesArea.setDisable(true);
+            return;
+        }
+
+        detailTitleValue.setText(safeText(vinyl.getTitle()));
+        detailArtistValue.setText(safeText(vinyl.getArtist()));
+        detailGenreValue.setText(safeText(vinyl.getGenre()));
+        detailYearValue.setText(vinyl.getYear() == null ? "-" : vinyl.getYear().toString());
+        detailPriceValue.setText(formatPrice(vinyl.getPrice()));
+
+        storageLocationField.setDisable(false);
+        notesArea.setDisable(false);
+
+        Long vinylId = vinyl.getId();
+        storageLocationField.setText(vinylId == null ? "" : storageLocationByVinylId.getOrDefault(vinylId, ""));
+        notesArea.setText(vinylId == null ? "" : notesByVinylId.getOrDefault(vinylId, ""));
+    }
+
+    private String safeText(String value) {
+        return value == null || value.isBlank() ? "-" : value;
+    }
+
+    private String formatPrice(BigDecimal price) {
+        return price == null ? "-" : price + " €";
+    }
+
+    private Image loadPlaceholderImage() {
+        try (InputStream is = getClass().getResourceAsStream("/images/vinyl-placeholder.png")) {
+            return is == null ? null : new Image(is);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     private class VinylListCell extends javafx.scene.control.ListCell<Vinyl> {
         private final HBox content;
         private final ImageView imageView;
         private final Label titleLabel;
         private final Label artistLabel;
+        private final Label genreLabel;
         private final Label priceLabel;
         private final Button deleteButton;
 
@@ -134,6 +256,9 @@ public class MainViewController {
             
             artistLabel = new Label();
             artistLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: gray;");
+
+            genreLabel = new Label();
+            genreLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #555;");
             
             priceLabel = new Label();
             priceLabel.setStyle("-fx-font-size: 12px;");
@@ -142,7 +267,7 @@ public class MainViewController {
             deleteButton.setStyle("-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-size: 11px;");
             deleteButton.setMinWidth(70);
 
-            VBox textBox = new VBox(5, titleLabel, artistLabel);
+            VBox textBox = new VBox(5, titleLabel, artistLabel, genreLabel);
             textBox.setPadding(new Insets(0, 10, 0, 10));
             HBox.setHgrow(textBox, Priority.ALWAYS);
             
@@ -157,20 +282,11 @@ public class MainViewController {
             if (empty || vinyl == null) {
                 setGraphic(null);
             } else {
-                try {
-                    InputStream is = getClass().getResourceAsStream("/images/vinyl-placeholder.png");
-                    if (is != null) {
-                        Image image = new Image(is);
-                        imageView.setImage(image);
-                    } else {
-                        imageView.setImage(null);
-                    }
-                } catch (Exception e) {
-                    imageView.setImage(null);
-                }
+                imageView.setImage(loadPlaceholderImage());
                 
                 titleLabel.setText(vinyl.getTitle());
                 artistLabel.setText(vinyl.getArtist());
+                genreLabel.setText("Genre: " + safeText(vinyl.getGenre()));
                 priceLabel.setText(vinyl.getPrice() != null ? vinyl.getPrice() + " €" : "");
                 
                 // configure delete action for this cell's vinyl
