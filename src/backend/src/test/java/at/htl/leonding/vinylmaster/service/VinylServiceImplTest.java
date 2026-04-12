@@ -112,6 +112,27 @@ class VinylServiceImplTest {
         assertEquals(2, vinyls.size());
     }
 
+    @Test
+    void testUpdateVinylDuplicateAgainstOtherRecord() throws Exception {
+        Vinyl first = vinylService.addVinyl(new Vinyl("Album 1", "Artist 1", "Rock", 2000, new BigDecimal("20.00")));
+        Vinyl second = vinylService.addVinyl(new Vinyl("Album 2", "Artist 2", "Jazz", 2010, new BigDecimal("25.00")));
+
+        second.setTitle(first.getTitle());
+        second.setArtist(first.getArtist());
+        second.setYear(first.getYear());
+
+        assertThrows(DuplicateVinylException.class, () -> vinylService.updateVinyl(second));
+    }
+
+    @Test
+    void testUpdateVinylKeepsSameValues() throws Exception {
+        Vinyl vinyl = vinylService.addVinyl(new Vinyl("Album 1", "Artist 1", "Rock", 2000, new BigDecimal("20.00")));
+
+        Vinyl updated = vinylService.updateVinyl(vinyl);
+
+        assertEquals(vinyl.getId(), updated.getId());
+    }
+
     // Test repository implementation
     static class TestVinylRepository implements VinylRepository {
         private final List<Vinyl> vinyls = new ArrayList<>();
@@ -148,6 +169,15 @@ class VinylServiceImplTest {
         @Override
         public boolean existsByTitleAndArtistAndYear(String title, String artist, Integer year) {
             return findByTitleAndArtistAndYear(title, artist, year).isPresent();
+        }
+
+        @Override
+        public boolean existsByTitleAndArtistAndYearAndIdNot(String title, String artist, Integer year, Long excludedId) {
+            return vinyls.stream()
+                    .anyMatch(v -> !v.getId().equals(excludedId)
+                            && v.getTitle().equals(title)
+                            && v.getArtist().equals(artist)
+                            && v.getYear().equals(year));
         }
 
         @Override

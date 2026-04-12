@@ -399,3 +399,40 @@ Yes.
   - `Change Image` replaces the existing cover and updates DB path.
   - `Clear Image` removes custom cover and reverts to placeholder.
 - Updated list/detail rendering to use custom cover when available, otherwise placeholder.
+
+---
+
+Using Template A
+
+# Issue #3: edit vinyls
+
+## Entry Metadata
+- **Date:** 2026-04-12
+- **Issue URL:** https://github.com/2526-3bhif-syp/2526-3bhif-syp-project-vinyl-master/issues/3
+- **Issue Status:** open (reopened)
+- **Session Goal:** Identify missing implementation to satisfy edit-vinyl acceptance criteria and prepare execution context.
+
+## User Request
+Check issue #3 and determine what is still missing to mark it as done.
+
+## Acceptance Criteria (from issue/user)
+1. Each vinyl record has an edit option (e.g. button or menu).
+2. There is an editing-form with current data pre-filled.
+3. The user can modify all editable fields.
+4. Validation of input.
+5. After saving, the edited vinyl is shown again in the collection.
+
+## Clarification Questions
+1. **Where should the primary edit action be placed? (list row, details panel, or both)**
+   - **Answer:** In the side panel, also move the delete button there.
+2. **Should the existing add form be reused in edit mode, or should a separate edit form be created?**
+   - **Answer:** Reuse the add form.
+3. **On editing title/artist/year, should duplicate checks run against other records (excluding current record id)?**
+   - **Answer:** Yes, just like at creation.
+
+## Confirmed Decisions
+- Existing image edit support alone does not satisfy issue #3.
+- Full metadata edit flow is required for completion.
+
+## Open Questions (Blocking)
+- None. Current clarifications are sufficient to start implementation.

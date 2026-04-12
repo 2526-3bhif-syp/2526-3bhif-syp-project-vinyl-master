@@ -25,11 +25,12 @@ public class VinylServiceImpl implements VinylService {
     }
 
     @Override
-    public Vinyl updateVinyl(Vinyl vinyl) throws ValidationException {
+    public Vinyl updateVinyl(Vinyl vinyl) throws DuplicateVinylException, ValidationException {
         if (vinyl.getId() == null) {
             throw new ValidationException("id", "Id is required for updates");
         }
         validateVinyl(vinyl);
+        checkForDuplicatesOnUpdate(vinyl);
         return vinylRepository.save(vinyl);
     }
 
@@ -76,6 +77,15 @@ public class VinylServiceImpl implements VinylService {
                 vinyl.getTitle(), vinyl.getArtist(), vinyl.getYear())) {
             throw new DuplicateVinylException(
                     String.format("Vinyl already exists: %s by %s (%d)", 
+                            vinyl.getTitle(), vinyl.getArtist(), vinyl.getYear()));
+        }
+    }
+
+    private void checkForDuplicatesOnUpdate(Vinyl vinyl) throws DuplicateVinylException {
+        if (vinylRepository.existsByTitleAndArtistAndYearAndIdNot(
+                vinyl.getTitle(), vinyl.getArtist(), vinyl.getYear(), vinyl.getId())) {
+            throw new DuplicateVinylException(
+                    String.format("Vinyl already exists: %s by %s (%d)",
                             vinyl.getTitle(), vinyl.getArtist(), vinyl.getYear()));
         }
     }

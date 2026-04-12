@@ -13,7 +13,7 @@
     <VBox fx:id="formContainer" spacing="15" alignment="TOP_CENTER" maxWidth="500" maxHeight="680"
           style="-fx-background-color: white; -fx-background-radius: 10; -fx-padding: 30;">
         
-        <Label text="Add New Vinyl" style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
+        <Label fx:id="formTitleLabel" text="Add New Vinyl" style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
         
         <Separator/>
         

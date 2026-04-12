@@ -25,6 +25,9 @@ import java.util.List;
 public class AddVinylFormController {
     @FXML
     private VBox formContainer;
+
+    @FXML
+    private Label formTitleLabel;
     
     @FXML
     private TextField titleField;
@@ -67,6 +70,9 @@ public class AddVinylFormController {
     private final CoverImageService coverImageService;
     private MainViewController mainViewController;
     private File selectedImageFile;
+    private Vinyl editingVinyl;
+    private boolean editMode;
+    private boolean imageClearedInEditMode;
 
     public AddVinylFormController() {
         this.vinylService = new VinylServiceImpl();
@@ -168,6 +174,7 @@ public class AddVinylFormController {
         try {
             coverImageService.validateImageFile(file);
             selectedImageFile = file;
+            imageClearedInEditMode = false;
             updateImagePreview();
             return true;
         } catch (IOException e) {
@@ -178,18 +185,30 @@ public class AddVinylFormController {
 
     private void clearSelectedImage() {
         selectedImageFile = null;
+        imageClearedInEditMode = editMode;
         updateImagePreview();
     }
 
     private void updateImagePreview() {
-        if (selectedImageFile == null) {
-            imageFileLabel.setText("No image selected");
-            imagePreview.setImage(null);
+        if (selectedImageFile != null) {
+            imageFileLabel.setText(selectedImageFile.getName());
+            Image image = new Image(selectedImageFile.toURI().toString(), 64, 64, true, true, false);
+            imagePreview.setImage(image);
             return;
         }
-        imageFileLabel.setText(selectedImageFile.getName());
-        Image image = new Image(selectedImageFile.toURI().toString(), 64, 64, true, true, false);
-        imagePreview.setImage(image);
+
+        if (editMode && editingVinyl != null && editingVinyl.getImagePath() != null
+                && !editingVinyl.getImagePath().isBlank() && !imageClearedInEditMode) {
+            Path imagePath = coverImageService.getAbsolutePath(editingVinyl.getImagePath());
+            if (imagePath.toFile().exists()) {
+                imageFileLabel.setText(imagePath.getFileName().toString());
+                imagePreview.setImage(new Image(imagePath.toUri().toString(), 64, 64, true, true, false));
+                return;
+            }
+        }
+
+        imageFileLabel.setText("No image selected");
+        imagePreview.setImage(null);
     }
 
     private boolean validateTitle() {
@@ -271,7 +290,7 @@ public class AddVinylFormController {
         }
         
         try {
-            Vinyl vinyl = new Vinyl();
+            Vinyl vinyl = editMode ? editingVinyl : new Vinyl();
             vinyl.setTitle(titleField.getText().trim());
             vinyl.setArtist(artistField.getText().trim());
             vinyl.setYear(Integer.parseInt(yearField.getText().trim()));
@@ -281,23 +300,31 @@ public class AddVinylFormController {
                 vinyl.setGenre(genre.trim());
                 // Save new genre if it doesn't exist
                 genreService.addGenre(genre.trim());
+            } else {
+                vinyl.setGenre(null);
             }
             
             String priceText = priceField.getText();
             if (priceText != null && !priceText.trim().isEmpty()) {
                 vinyl.setPrice(new BigDecimal(priceText.trim()));
+            } else {
+                vinyl.setPrice(null);
             }
-            
-            Vinyl savedVinyl = vinylService.addVinyl(vinyl);
-            if (selectedImageFile != null) {
-                try {
-                    String relativeCoverPath = coverImageService.saveCover(selectedImageFile, savedVinyl.getId());
-                    savedVinyl.setImagePath(relativeCoverPath);
-                    vinylService.updateVinyl(savedVinyl);
-                } catch (IOException e) {
+
+            Vinyl savedVinyl;
+            if (editMode) {
+                savedVinyl = vinylService.updateVinyl(vinyl);
+            } else {
+                savedVinyl = vinylService.addVinyl(vinyl);
+            }
+
+            try {
+                applyImageChanges(savedVinyl);
+            } catch (IOException e) {
+                if (!editMode) {
                     vinylService.deleteVinyl(savedVinyl.getId());
-                    throw new RuntimeException("Failed to process selected image: " + e.getMessage(), e);
                 }
+                throw new RuntimeException("Failed to process selected image: " + e.getMessage(), e);
             }
             
             if (mainViewController != null) {
@@ -328,5 +355,42 @@ public class AddVinylFormController {
 
     public void setMainViewController(MainViewController mainViewController) {
         this.mainViewController = mainViewController;
+    }
+
+    public void setEditVinyl(Vinyl vinyl) {
+        if (vinyl == null) {
+            return;
+        }
+
+        this.editMode = true;
+        this.editingVinyl = vinyl;
+        this.imageClearedInEditMode = false;
+        this.selectedImageFile = null;
+
+        formTitleLabel.setText("Edit Vinyl");
+        saveButton.setText("Update");
+
+        titleField.setText(vinyl.getTitle());
+        artistField.setText(vinyl.getArtist());
+        genreComboBox.setValue(vinyl.getGenre());
+        yearField.setText(vinyl.getYear() == null ? "" : vinyl.getYear().toString());
+        priceField.setText(vinyl.getPrice() == null ? "" : vinyl.getPrice().toString());
+        updateImagePreview();
+    }
+
+    private void applyImageChanges(Vinyl vinyl) throws IOException, ValidationException, DuplicateVinylException {
+        if (selectedImageFile != null) {
+            String relativeCoverPath = coverImageService.saveCover(selectedImageFile, vinyl.getId());
+            vinyl.setImagePath(relativeCoverPath);
+            vinylService.updateVinyl(vinyl);
+            return;
+        }
+
+        if (editMode && imageClearedInEditMode && vinyl.getImagePath() != null && !vinyl.getImagePath().isBlank()) {
+            String oldImagePath = vinyl.getImagePath();
+            coverImageService.deleteCover(oldImagePath);
+            vinyl.setImagePath(null);
+            vinylService.updateVinyl(vinyl);
+        }
     }
 }

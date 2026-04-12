@@ -44,8 +44,8 @@
                                 <Label fx:id="detailArtistValue" text="-"/>
                             </HBox>
                             <HBox spacing="8">
-                                <Button fx:id="changeImageButton" text="Change Image"/>
-                                <Button fx:id="clearImageButton" text="Clear Image"/>
+                                <Button fx:id="editVinylButton" text="Edit Vinyl"/>
+                                <Button fx:id="deleteVinylButton" text="Delete Vinyl"/>
                             </HBox>
                         </VBox>
                     </HBox>

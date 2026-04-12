@@ -11,6 +11,8 @@ public class Vinyl {
     private Integer year;
     private BigDecimal price;
     private String imagePath;
+    private String storageLocation;
+    private String notes;
 
     public Vinyl() {
     }
@@ -24,10 +26,15 @@ public class Vinyl {
     }
 
     public Vinyl(Long id, String title, String artist, String genre, Integer year, BigDecimal price) {
-        this(id, title, artist, genre, year, price, null);
+        this(id, title, artist, genre, year, price, null, null, null);
     }
 
     public Vinyl(Long id, String title, String artist, String genre, Integer year, BigDecimal price, String imagePath) {
+        this(id, title, artist, genre, year, price, imagePath, null, null);
+    }
+
+    public Vinyl(Long id, String title, String artist, String genre, Integer year, BigDecimal price,
+                 String imagePath, String storageLocation, String notes) {
         this.id = id;
         this.title = title;
         this.artist = artist;
@@ -35,6 +42,8 @@ public class Vinyl {
         this.year = year;
         this.price = price;
         this.imagePath = imagePath;
+        this.storageLocation = storageLocation;
+        this.notes = notes;
     }
 
     public Long getId() {
@@ -93,6 +102,22 @@ public class Vinyl {
         this.imagePath = imagePath;
     }
 
+    public String getStorageLocation() {
+        return storageLocation;
+    }
+
+    public void setStorageLocation(String storageLocation) {
+        this.storageLocation = storageLocation;
+    }
+
+    public String getNotes() {
+        return notes;
+    }
+
+    public void setNotes(String notes) {
+        this.notes = notes;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -116,6 +141,8 @@ public class Vinyl {
                 ", year=" + year +
                 ", price=" + price +
                 ", imagePath='" + imagePath + '\'' +
+                ", storageLocation='" + storageLocation + '\'' +
+                ", notes='" + notes + '\'' +
                 '}';
     }
 }

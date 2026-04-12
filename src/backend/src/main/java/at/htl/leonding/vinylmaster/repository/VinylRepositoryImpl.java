@@ -21,7 +21,7 @@ public class VinylRepositoryImpl implements VinylRepository {
     }
 
     private Vinyl insert(Vinyl vinyl) {
-        String sql = "INSERT INTO vinyl (title, artist, genre, year, price, image_path) VALUES (?, ?, ?, ?, ?, ?) RETURNING id";
+        String sql = "INSERT INTO vinyl (title, artist, genre, year, price, image_path, storage_location, notes) VALUES (?, ?, ?, ?, ?, ?, ?, ?) RETURNING id";
         
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -36,6 +36,8 @@ public class VinylRepositoryImpl implements VinylRepository {
                 stmt.setNull(5, Types.NUMERIC);
             }
             stmt.setString(6, vinyl.getImagePath());
+            stmt.setString(7, vinyl.getStorageLocation());
+            stmt.setString(8, vinyl.getNotes());
             
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
@@ -50,7 +52,7 @@ public class VinylRepositoryImpl implements VinylRepository {
     }
 
     private Vinyl update(Vinyl vinyl) {
-        String sql = "UPDATE vinyl SET title = ?, artist = ?, genre = ?, year = ?, price = ?, image_path = ? WHERE id = ?";
+        String sql = "UPDATE vinyl SET title = ?, artist = ?, genre = ?, year = ?, price = ?, image_path = ?, storage_location = ?, notes = ? WHERE id = ?";
         
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -65,7 +67,9 @@ public class VinylRepositoryImpl implements VinylRepository {
                 stmt.setNull(5, Types.NUMERIC);
             }
             stmt.setString(6, vinyl.getImagePath());
-            stmt.setLong(7, vinyl.getId());
+            stmt.setString(7, vinyl.getStorageLocation());
+            stmt.setString(8, vinyl.getNotes());
+            stmt.setLong(9, vinyl.getId());
             
             stmt.executeUpdate();
             return vinyl;
@@ -76,7 +80,7 @@ public class VinylRepositoryImpl implements VinylRepository {
 
     @Override
     public List<Vinyl> findAll() {
-        String sql = "SELECT id, title, artist, genre, year, price, image_path FROM vinyl ORDER BY created_at DESC";
+        String sql = "SELECT id, title, artist, genre, year, price, image_path, storage_location, notes FROM vinyl ORDER BY created_at DESC";
         List<Vinyl> vinyls = new ArrayList<>();
         
         try (Connection conn = DatabaseConfig.getConnection();
@@ -95,7 +99,7 @@ public class VinylRepositoryImpl implements VinylRepository {
 
     @Override
     public Optional<Vinyl> findById(Long id) {
-        String sql = "SELECT id, title, artist, genre, year, price, image_path FROM vinyl WHERE id = ?";
+        String sql = "SELECT id, title, artist, genre, year, price, image_path, storage_location, notes FROM vinyl WHERE id = ?";
         
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -116,7 +120,7 @@ public class VinylRepositoryImpl implements VinylRepository {
 
     @Override
     public Optional<Vinyl> findByTitleAndArtistAndYear(String title, String artist, Integer year) {
-        String sql = "SELECT id, title, artist, genre, year, price, image_path FROM vinyl WHERE title = ? AND artist = ? AND year = ?";
+        String sql = "SELECT id, title, artist, genre, year, price, image_path, storage_location, notes FROM vinyl WHERE title = ? AND artist = ? AND year = ?";
         
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -143,6 +147,26 @@ public class VinylRepositoryImpl implements VinylRepository {
     }
 
     @Override
+    public boolean existsByTitleAndArtistAndYearAndIdNot(String title, String artist, Integer year, Long excludedId) {
+        String sql = "SELECT 1 FROM vinyl WHERE title = ? AND artist = ? AND year = ? AND id <> ? LIMIT 1";
+
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, title);
+            stmt.setString(2, artist);
+            stmt.setInt(3, year);
+            stmt.setLong(4, excludedId);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                return rs.next();
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to check duplicate vinyl for update", e);
+        }
+    }
+
+    @Override
     public void deleteById(Long id) {
         String sql = "DELETE FROM vinyl WHERE id = ?";
         
@@ -164,7 +188,9 @@ public class VinylRepositoryImpl implements VinylRepository {
         Integer year = rs.getInt("year");
         BigDecimal price = rs.getBigDecimal("price");
         String imagePath = rs.getString("image_path");
+        String storageLocation = rs.getString("storage_location");
+        String notes = rs.getString("notes");
         
-        return new Vinyl(id, title, artist, genre, year, price, imagePath);
+        return new Vinyl(id, title, artist, genre, year, price, imagePath, storageLocation, notes);
     }
 }

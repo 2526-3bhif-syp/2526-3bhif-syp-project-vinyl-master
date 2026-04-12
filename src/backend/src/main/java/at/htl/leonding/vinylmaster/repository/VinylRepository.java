@@ -11,5 +11,6 @@ public interface VinylRepository {
     Optional<Vinyl> findById(Long id);
     Optional<Vinyl> findByTitleAndArtistAndYear(String title, String artist, Integer year);
     boolean existsByTitleAndArtistAndYear(String title, String artist, Integer year);
+    boolean existsByTitleAndArtistAndYearAndIdNot(String title, String artist, Integer year, Long excludedId);
     void deleteById(Long id);
 }

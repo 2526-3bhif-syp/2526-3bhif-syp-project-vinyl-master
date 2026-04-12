@@ -1,6 +1,6 @@
 services:
   postgres:
-    image: postgres:18
+    image: postgres:15
     container_name: vinylmaster-db
     environment:
       POSTGRES_DB: vinylmaster
