@@ -436,3 +436,48 @@ Check issue #3 and determine what is still missing to mark it as done.
 
 ## Open Questions (Blocking)
 - None. Current clarifications are sufficient to start implementation.
+
+---
+
+Using Template B
+
+## Session Notes - 2026-04-12
+
+### Issue Context
+- **Issue:** #3 - edit vinyls
+- **Scope in this session:** Implement full edit workflow, align image editing UX to edit form only, persist detail fields (storage location/notes), and fix local DB startup problem.
+
+### Changes Implemented
+- Implemented full **edit vinyl** flow via side panel:
+  - Added `Edit Vinyl` action in details panel.
+  - Moved delete action to details panel (`Delete Vinyl`).
+  - Reused add form in edit mode with pre-filled values and update-save behavior.
+- Added duplicate-safe update checks:
+  - Repository method to detect duplicates excluding current ID.
+  - Service update flow now applies duplicate validation like create.
+- Refined image UX:
+  - Removed side-panel image change/clear buttons (image edits now happen in edit form only).
+  - Fixed stale-image issue by clearing image cache when form closes.
+- Fixed persistence for detail fields:
+  - Added migration `V3__add_storage_location_and_notes_to_vinyl.sql`.
+  - Extended `Vinyl` model with `storageLocation` and `notes`.
+  - Updated repository SQL mapping for both fields.
+  - Replaced in-memory notes/storage maps with database-backed persistence in details panel.
+- Fixed Docker/PostgreSQL startup mismatch:
+  - Root cause: existing data volume is PG15 while compose used `postgres:18`.
+  - Updated compose image to `postgres:15` so current volume starts successfully.
+
+### Questions and Answers (Session)
+1. **Q:** Why does Docker DB startup fail?
+   - **A:** Version mismatch between data volume (PG15) and image (PG18).
+2. **Q:** Should image buttons remain in side panel?
+   - **A:** No, removed as requested since image editing is available in edit form.
+3. **Q:** Should notes/storage be per-vinyl and persistent?
+   - **A:** Yes, implemented with DB columns and persistence logic.
+
+### Validation / Outcome
+- Build/test pipeline succeeds after the above changes.
+- Current status: **done** for implemented scope in this session.
+
+### Next Steps
+- Re-check issue #3 acceptance criteria against live UI behavior and close if all criteria are satisfied.
