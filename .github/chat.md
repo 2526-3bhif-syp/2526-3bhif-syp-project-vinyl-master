@@ -466,6 +466,10 @@ Using Template B
 - Fixed Docker/PostgreSQL startup mismatch:
   - Root cause: existing data volume is PG15 while compose used `postgres:18`.
   - Updated compose image to `postgres:15` so current volume starts successfully.
+- Improved selection/readability UX in collection view:
+  - Details panel is hidden before a vinyl is selected.
+  - Details panel appears on selection with a subtle slide-in + fade animation.
+  - Selection highlight is now subtle (light background + blue outline) instead of strong blue fill.
 
 ### Questions and Answers (Session)
 1. **Q:** Why does Docker DB startup fail?
@@ -474,6 +478,8 @@ Using Template B
    - **A:** No, removed as requested since image editing is available in edit form.
 3. **Q:** Should notes/storage be per-vinyl and persistent?
    - **A:** Yes, implemented with DB columns and persistence logic.
+4. **Q:** Should side panel be hidden before selection and selection styling be more subtle?
+   - **A:** Yes, implemented (hidden-by-default panel + subtle outlined selection state).
 
 ### Validation / Outcome
 - Build/test pipeline succeeds after the above changes.
