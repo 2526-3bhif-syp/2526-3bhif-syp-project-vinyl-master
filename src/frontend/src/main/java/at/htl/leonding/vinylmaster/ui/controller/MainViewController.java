@@ -3,6 +3,9 @@ package at.htl.leonding.vinylmaster.ui.controller;
 import at.htl.leonding.vinylmaster.model.Vinyl;
 import at.htl.leonding.vinylmaster.service.VinylServiceImpl;
 import at.htl.leonding.vinylmaster.ui.image.CoverImageService;
+import javafx.animation.FadeTransition;
+import javafx.animation.ParallelTransition;
+import javafx.animation.TranslateTransition;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -11,6 +14,7 @@ import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
@@ -28,6 +32,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
+import javafx.util.Duration;
 
 public class MainViewController {
     @FXML
@@ -76,6 +81,12 @@ public class MainViewController {
     @FXML
     private Button deleteVinylButton;
 
+    @FXML
+    private VBox detailsPanel;
+
+    @FXML
+    private SplitPane collectionSplitPane;
+
     private final VinylServiceImpl vinylService;
     private final CoverImageService coverImageService;
     private final ObservableList<Vinyl> vinylList;
@@ -85,6 +96,7 @@ public class MainViewController {
     private Pane addVinylFormPane;
     private javafx.collections.transformation.FilteredList<Vinyl> filteredVinyls;
     private Vinyl selectedVinyl;
+    private ParallelTransition detailsPanelAnimation;
 
     public MainViewController() {
         this.vinylService = new VinylServiceImpl();
@@ -118,6 +130,8 @@ public class MainViewController {
     }
 
     private void setupDetailsPane() {
+        detailsPanel.setVisible(false);
+        detailsPanel.setManaged(false);
         storageLocationField.setDisable(true);
         notesArea.setDisable(true);
         editVinylButton.setDisable(true);
@@ -235,6 +249,12 @@ public class MainViewController {
         selectedVinyl = vinyl;
 
         if (vinyl == null) {
+            if (detailsPanelAnimation != null) {
+                detailsPanelAnimation.stop();
+            }
+            detailsPanel.setVisible(false);
+            detailsPanel.setManaged(false);
+            collectionSplitPane.setDividerPositions(1.0);
             detailImageView.setImage(detailPlaceholderImage);
             detailTitleValue.setText("-");
             detailArtistValue.setText("-");
@@ -250,6 +270,9 @@ public class MainViewController {
             return;
         }
 
+        detailsPanel.setVisible(true);
+        detailsPanel.setManaged(true);
+        collectionSplitPane.setDividerPositions(0.62);
         detailImageView.setImage(loadCoverImage(vinyl, 64, 64));
         detailTitleValue.setText(safeText(vinyl.getTitle()));
         detailArtistValue.setText(safeText(vinyl.getArtist()));
@@ -264,6 +287,31 @@ public class MainViewController {
         notesArea.setText(vinyl.getNotes() == null ? "" : vinyl.getNotes());
         editVinylButton.setDisable(false);
         deleteVinylButton.setDisable(false);
+        playDetailsPanelSlideInAnimation();
+    }
+
+    private void playDetailsPanelSlideInAnimation() {
+        if (detailsPanel == null) {
+            return;
+        }
+
+        if (detailsPanelAnimation != null) {
+            detailsPanelAnimation.stop();
+        }
+
+        detailsPanel.setTranslateX(28);
+        detailsPanel.setOpacity(0.55);
+
+        TranslateTransition slide = new TranslateTransition(Duration.millis(220), detailsPanel);
+        slide.setFromX(28);
+        slide.setToX(0);
+
+        FadeTransition fade = new FadeTransition(Duration.millis(220), detailsPanel);
+        fade.setFromValue(0.55);
+        fade.setToValue(1.0);
+
+        detailsPanelAnimation = new ParallelTransition(slide, fade);
+        detailsPanelAnimation.play();
     }
 
     private String safeText(String value) {
@@ -370,9 +418,10 @@ public class MainViewController {
             imageView.setFitWidth(50);
             imageView.setFitHeight(50);
             imageView.setPreserveRatio(true);
+            setStyle("-fx-background-color: transparent; -fx-padding: 2 0 2 0;");
             
             titleLabel = new Label();
-            titleLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
+            titleLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 14px; -fx-text-fill: #1f2937;");
             
             artistLabel = new Label();
             artistLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: gray;");
@@ -381,7 +430,7 @@ public class MainViewController {
             genreLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #555;");
             
             priceLabel = new Label();
-            priceLabel.setStyle("-fx-font-size: 12px;");
+            priceLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #1f2937;");
             
             VBox textBox = new VBox(5, titleLabel, artistLabel, genreLabel);
             textBox.setPadding(new Insets(0, 10, 0, 10));
@@ -390,6 +439,7 @@ public class MainViewController {
             content = new HBox(10, imageView, textBox, priceLabel);
             content.setPadding(new Insets(10));
             content.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
+            applySelectionStyle(false);
         }
 
         @Override
@@ -404,8 +454,25 @@ public class MainViewController {
                 artistLabel.setText(vinyl.getArtist());
                 genreLabel.setText("Genre: " + safeText(vinyl.getGenre()));
                 priceLabel.setText(vinyl.getPrice() != null ? vinyl.getPrice() + " €" : "");
+                applySelectionStyle(isSelected());
 
                 setGraphic(content);
+            }
+        }
+
+        @Override
+        public void updateSelected(boolean selected) {
+            super.updateSelected(selected);
+            applySelectionStyle(selected);
+        }
+
+        private void applySelectionStyle(boolean selected) {
+            if (selected) {
+                content.setStyle("-fx-background-color: #f6f9ff; -fx-background-radius: 8; "
+                        + "-fx-border-color: #5b8def; -fx-border-width: 1.2; -fx-border-radius: 8;");
+            } else {
+                content.setStyle("-fx-background-color: #ffffff; -fx-background-radius: 8; "
+                        + "-fx-border-color: #e5e7eb; -fx-border-width: 1; -fx-border-radius: 8;");
             }
         }
     }

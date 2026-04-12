@@ -25,11 +25,11 @@
                     style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 10 20;"/>
         </HBox>
         
-        <SplitPane dividerPositions="0.62" VBox.vgrow="ALWAYS">
+        <SplitPane fx:id="collectionSplitPane" dividerPositions="1.0" VBox.vgrow="ALWAYS">
             <items>
                 <ListView fx:id="vinylListView"/>
 
-                <VBox spacing="10" style="-fx-background-color: #f8f8f8; -fx-padding: 14;">
+                <VBox fx:id="detailsPanel" spacing="10" style="-fx-background-color: #f8f8f8; -fx-padding: 14;">
                     <Label text="Record Details" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
 
                     <HBox alignment="CENTER_LEFT" spacing="10">
