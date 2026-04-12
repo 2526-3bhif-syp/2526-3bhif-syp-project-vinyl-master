@@ -330,3 +330,96 @@ asciidocs/
 - **Target Users**: Vinyl record collectors
 - **Performance Target**: Search <200ms for 5,000 records
 - **Offline Support**: Basic search without internet (planned)
+
+## chat.md Entry Templates (Required Format)
+
+For every future `chat.md` update, use one of the templates below and keep section titles consistent.
+
+> ⚠️ **Initialization warning for new entries:** Before writing any new `chat.md` section, explicitly state that the entry must follow **Template A, B, or C** from this section. Do not start a free-form entry.
+
+### Template A: Issue Kickoff + Clarifications
+
+```markdown
+# Issue #[ISSUE_NUMBER]: [ISSUE_TITLE]
+
+## Entry Metadata
+- **Date:** [YYYY-MM-DD]
+- **Issue URL:** [https://github.com/.../issues/...]
+- **Issue Status:** [open/closed/reopened]
+- **Session Goal:** [short summary]
+
+## User Request
+[Short quote/paraphrase of what the user wants.]
+
+## Acceptance Criteria (from issue/user)
+1. [Criterion 1]
+2. [Criterion 2]
+3. [Criterion 3]
+
+## Clarification Questions
+1. **[Question]**
+   - **Answer:** [Pending]
+2. **[Question]**
+   - **Answer:** [Pending]
+
+## Confirmed Decisions
+- [Decision 1]
+- [Decision 2]
+
+## Open Questions (Blocking)
+- [Question still unresolved]
+```
+
+### Template B: Session Progress / Implementation Update
+
+```markdown
+## Session Notes - [YYYY-MM-DD]
+
+### Issue Context
+- **Issue:** #[ISSUE_NUMBER] - [ISSUE_TITLE]
+- **Scope in this session:** [short scope]
+
+### Changes Implemented
+- [Change 1]
+- [Change 2]
+- [Change 3]
+
+### Questions and Answers (Session)
+1. **Q:** [Question]
+   - **A:** [Answer]
+2. **Q:** [Question]
+   - **A:** [Answer]
+
+### Validation / Outcome
+- [What was verified at a high level]
+- [Current status: done / partial / blocked]
+
+### Next Steps
+- [Next action 1]
+- [Next action 2]
+```
+
+### Template C: Context Validation Block
+
+```markdown
+### Context Validation - [Feature/Topic]
+
+#### Confirmed and clear
+- [Confirmed point 1]
+- [Confirmed point 2]
+
+#### Resolved implementation decisions
+1. [Decision]
+2. [Decision]
+
+#### Still unclear (if any)
+1. [Unclear point]
+```
+
+### Usage Rules
+- When initializing a new `chat.md` entry, first add a one-line note: `Using Template [A/B/C]`.
+- Always include **Date** and **Issue reference** in each new entry.
+- Keep questions explicit and pair each with an answer (`Q/A`) once resolved.
+- Use `Pending` instead of guessing when information is missing.
+- Add updates as incremental session sections; do not overwrite older decisions.
+- If scope changes, add a new `Context Validation` block before implementation.
