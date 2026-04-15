@@ -555,3 +555,34 @@ Using Template B
 
 ### Next Steps
 - Keep issue #14 as the canonical reference for cross-machine asset/runtime-data boundaries.
+
+---
+
+Using Template B
+
+## Session Notes - 2026-04-15
+
+### Issue Context
+- **Issue:** #14 - BUG: Images cause problems on other mashines
+- **Scope in this session:** Investigate `:frontend:run` startup crash on a colleague machine and identify the concrete root cause.
+
+### Changes Implemented
+- Traced the crash to a database schema mismatch during app startup (`VinylRepositoryImpl.findAll` querying `image_path`).
+- Confirmed Flyway only applied `V1` on the affected machine, while runtime code expects columns introduced in later migrations.
+- Identified repository state problem: `V2__add_image_path_to_vinyl.sql` and `V3__add_storage_location_and_notes_to_vinyl.sql` existed locally but were not tracked in git.
+- Defined the fix path: add and push both migration files so all machines run the same schema evolution.
+
+### Questions and Answers (Session)
+1. **Q:** Is the SLF4J warning the reason `:frontend:run` fails?
+   - **A:** No. It is non-fatal and unrelated to the crash.
+2. **Q:** Why does PostgreSQL report `column "image_path" does not exist`?
+   - **A:** The teammate database was created from `V1` only, so the `image_path` column from `V2` was never applied.
+
+### Validation / Outcome
+- Root cause confirmed as missing tracked Flyway migrations in git, not JavaFX/FXML loading logic.
+- Startup failure is resolved by versioning and sharing `V2` and `V3` migrations so Flyway can migrate teammates consistently.
+
+### Next Steps
+- Commit and push:
+  - `src/backend/src/main/resources/db/migration/V2__add_image_path_to_vinyl.sql`
+  - `src/backend/src/main/resources/db/migration/V3__add_storage_location_and_notes_to_vinyl.sql`
