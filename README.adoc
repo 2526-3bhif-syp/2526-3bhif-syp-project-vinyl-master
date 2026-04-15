@@ -127,6 +127,9 @@ DB_USER=app
 DB_PASSWORD=app
 ```
 
+User-generated cover images are stored locally in `~/.vinylmaster/covers` and are not part of the repository.
+This keeps the project portable and lets every machine start with a blank state.
+
 ## Features
 
 ### Current Features (v1.0.0)

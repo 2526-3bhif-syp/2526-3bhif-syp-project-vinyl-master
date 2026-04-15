@@ -487,3 +487,40 @@ Using Template B
 
 ### Next Steps
 - Re-check issue #3 acceptance criteria against live UI behavior and close if all criteria are satisfied.
+
+---
+
+Using Template A
+
+# Issue #14: Cross-machine image portability and blank startup state
+
+## Entry Metadata
+- **Date:** 2026-04-15
+- **Issue URL:** https://github.com/2526-3bhif-syp/2526-3bhif-syp-project-vinyl-master/issues/14
+- **Issue Status:** open
+- **Session Goal:** Ensure the app runs on any machine without crashes caused by missing local image/user data and avoid committing machine-specific image data.
+
+## User Request
+Create a Template A entry and clarify what must be fixed so the project runs on any machine with a clean, blank state and without committing local machine image data.
+
+## Acceptance Criteria (from issue/user)
+1. Frontend image handling must not depend on machine-specific repository files.
+2. Local user image data must be excluded from version control.
+3. New contributors can start with a blank project state (no user-specific images).
+
+## Clarification Questions
+1. **Should uploaded cover images remain in the repository working directory (`src/frontend/covers`) or be moved to a user-local app data directory?**
+   - **Answer:** Move to user-local app data directory so repository stays clean.
+2. **Should existing legacy images stored in repository-relative paths still be readable to avoid regressions on old setups?**
+   - **Answer:** Yes, keep backward-compatible read behavior.
+3. **Should the generic placeholder image (`src/frontend/src/main/resources/images/vinyl-placeholder.jpg`) stay versioned as an application asset?**
+   - **Answer:** Yes, keep placeholder versioned; only user-uploaded images stay local/untracked.
+
+## Confirmed Decisions
+- Persist user-uploaded covers to `~/.vinylmaster/covers` instead of repository-relative `covers/`.
+- Keep compatibility for reading/deleting legacy repository-relative cover paths.
+- Ignore repository-local cover folders in `.gitignore` to prevent accidental commits.
+- Keep placeholder image as a tracked app resource.
+
+## Open Questions (Blocking)
+- None.

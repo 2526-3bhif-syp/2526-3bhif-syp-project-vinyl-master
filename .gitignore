@@ -49,3 +49,7 @@ build/
 *.class
 *.jar
 !gradle-wrapper.jar
+
+# Local user-generated frontend data
+covers/
+src/frontend/covers/

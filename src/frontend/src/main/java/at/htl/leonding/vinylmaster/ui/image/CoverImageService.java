@@ -13,6 +13,7 @@ public class CoverImageService {
     public static final long MAX_UPLOAD_SIZE_BYTES = 1_048_576; // 1 MB
     public static final int TARGET_SIZE = 256;
     private static final String IMAGE_DIRECTORY = "covers";
+    private static final String APP_DATA_DIRECTORY = ".vinylmaster";
 
     public String saveCover(File sourceFile, Long vinylId) throws IOException {
         BufferedImage sourceImage = validateImageFile(sourceFile);
@@ -29,18 +30,42 @@ public class CoverImageService {
         if (relativePath == null || relativePath.isBlank()) {
             return;
         }
-        Path absolutePath = getAbsolutePath(relativePath);
-        if (Files.exists(absolutePath)) {
-            Files.delete(absolutePath);
+        Path appDataPath = getAppDataBasePath().resolve(relativePath).normalize();
+        Path legacyPath = getLegacyBasePath().resolve(relativePath).normalize();
+
+        if (Files.exists(appDataPath)) {
+            Files.delete(appDataPath);
+        }
+        if (!appDataPath.equals(legacyPath) && Files.exists(legacyPath)) {
+            Files.delete(legacyPath);
         }
     }
 
     public Path getAbsolutePath(String relativePath) {
-        return Path.of(System.getProperty("user.dir")).resolve(relativePath).normalize();
+        Path appDataPath = getAppDataBasePath().resolve(relativePath).normalize();
+        if (Files.exists(appDataPath)) {
+            return appDataPath;
+        }
+
+        // Compatibility path for old setups where covers were stored inside the repository.
+        Path legacyPath = getLegacyBasePath().resolve(relativePath).normalize();
+        if (Files.exists(legacyPath)) {
+            return legacyPath;
+        }
+
+        return appDataPath;
     }
 
     public String getRelativePath(Long vinylId) {
         return IMAGE_DIRECTORY + "/vinyl-" + vinylId + ".jpg";
+    }
+
+    private Path getAppDataBasePath() {
+        return Path.of(System.getProperty("user.home")).resolve(APP_DATA_DIRECTORY).normalize();
+    }
+
+    private Path getLegacyBasePath() {
+        return Path.of(System.getProperty("user.dir")).normalize();
     }
 
     public BufferedImage validateImageFile(File sourceFile) throws IOException {
