@@ -309,6 +309,13 @@ asciidocs/
 - ⚠️ **Do NOT commit** `.env` files (gitignored, contains DB credentials)
 - ⚠️ **Do NOT hardcode** database credentials (use `.env`)
 
+### Git Strategy for Cross-Machine Stability
+- **Track only deterministic application assets** (e.g. placeholder images in `src/frontend/src/main/resources/**`).
+- **Never track runtime/user-generated data** (e.g. uploaded covers). Runtime files must live in user-local storage (`~/.vinylmaster/covers`) and stay unversioned.
+- **Do not use repository-relative paths for user data** because `user.dir` and local files differ per machine.
+- **Before pushing**, ensure no machine-specific files are staged (`git status`) and keep `.gitignore` aligned with generated/runtime paths.
+- For this project, issue **#14** is the reference case for this rule set.
+
 ### Database Setup Requirement
 - **Before running the app**, start PostgreSQL: `docker-compose up -d`
 - Flyway migrations run automatically on first app startup

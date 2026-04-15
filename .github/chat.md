@@ -524,3 +524,34 @@ Create a Template A entry and clarify what must be fixed so the project runs on 
 
 ## Open Questions (Blocking)
 - None.
+
+---
+
+Using Template B
+
+## Session Notes - 2026-04-15
+
+### Issue Context
+- **Issue:** #14 - Cross-machine image portability and startup stability
+- **Scope in this session:** Root-cause analysis focused on Git strategy and machine-independent behavior.
+
+### Changes Implemented
+- Identified the core Git/process failure: repository assets and runtime user data were not consistently separated.
+- Confirmed that placeholder assets must be versioned, while user-generated covers must never be committed.
+- Documented a machine-safe strategy:
+  - Track app assets in `src/frontend/src/main/resources/**`.
+  - Store runtime cover files in user-local app data (`~/.vinylmaster/covers`).
+  - Keep repository-local runtime folders ignored.
+
+### Questions and Answers (Session)
+1. **Q:** Why did this fail on another machine even though it worked locally?
+   - **A:** Local state masked the issue: missing/unsynced resource files and repository-relative runtime image paths depended on one developer's working directory and files.
+2. **Q:** What Git strategy prevents this class of bug?
+   - **A:** Strictly separate versioned application assets from unversioned runtime/user data and enforce this with path conventions plus `.gitignore`.
+
+### Validation / Outcome
+- Root cause was process-level (Git/data-boundary strategy), not a compile-time dependency failure.
+- Project now follows a portable model: deterministic tracked resources + per-user local runtime files.
+
+### Next Steps
+- Keep issue #14 as the canonical reference for cross-machine asset/runtime-data boundaries.
