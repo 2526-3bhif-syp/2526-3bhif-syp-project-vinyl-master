@@ -586,3 +586,38 @@ Using Template B
 - Commit and push:
   - `src/backend/src/main/resources/db/migration/V2__add_image_path_to_vinyl.sql`
   - `src/backend/src/main/resources/db/migration/V3__add_storage_location_and_notes_to_vinyl.sql`
+
+---
+
+Using Template A
+
+# Issue #15: Remove Docker and DB from the project
+
+## Entry Metadata
+- **Date:** 2026-04-22
+- **Issue URL:** https://github.com/2526-3bhif-syp/2526-3bhif-syp-project-vinyl-master/issues/15
+- **Issue Status:** closed
+- **Session Goal:** Document completion of Docker and PostgreSQL removal, transition to local file-based persistence.
+
+## User Request
+Vinyl Master is a local desktop app. Having Docker and a PostgreSQL database is unnecessary overhead. Replace the database with local file-based persistence (JSON serialization) and remove Docker entirely.
+
+## Acceptance Criteria (from issue/user)
+1. Remove Docker setup from the project
+2. Remove PostgreSQL database dependency
+3. Replace with local file-based persistence (e.g., JSON ObjectOutputStream)
+4. Ensure no conflicts with the backend architecture after removal
+
+## Clarification Questions
+None - scope was clear and all decisions were captured during implementation.
+
+## Confirmed Decisions
+- **Persistence strategy:** Jackson-based JSON serialization to local files (`data/vinyls.json`, `data/genres.json`)
+- **Data location:** `data/` directory in project root (auto-created on first run)
+- **Repository pattern:** File-based `FileVinylRepository` and `FileGenreRepository` with service layer
+- **Backwards compatibility:** Not applicable (no production data to migrate)
+- **Cover storage:** User home directory `~/.vinylmaster/covers/` (not in repository)
+
+## Open Questions (Blocking)
+None - issue closed as completed.
+
