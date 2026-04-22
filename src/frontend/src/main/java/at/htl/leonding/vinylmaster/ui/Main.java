@@ -21,8 +21,7 @@ public class Main extends Application {
 
     @Override
     public void stop() {
-        // Close database connection pool
-        at.htl.leonding.vinylmaster.config.DatabaseConfig.close();
+        // No database cleanup needed - all data is persisted locally
     }
 
     public static void main(String[] args) {

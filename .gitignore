@@ -53,3 +53,6 @@ build/
 # Local user-generated frontend data
 covers/
 src/frontend/covers/
+
+# Local data storage
+data/
