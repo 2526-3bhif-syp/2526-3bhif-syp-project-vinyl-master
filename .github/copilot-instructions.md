@@ -3,15 +3,15 @@
 ## Project Snapshot
 - **App:** JavaFX desktop app for vinyl collection management.
 - **Architecture:** Multi-module Gradle project with clear Backend/Frontend split.
-- **Backend pattern:** Service + Repository, PostgreSQL persistence, Flyway migrations.
+- **Backend pattern:** Service + Repository, local JSON file persistence.
 - **Status:** MVP complete (add vinyl flow, validation, duplicate detection, service-layer tests).
 - **Domain direction:** storage locations, statistics, search/filter, barcode scan, Discogs integration.
 
 ## Core Stack
 - Java 21, JavaFX 23
 - Gradle multi-module (`src/backend`, `src/frontend`)
-- PostgreSQL + Docker Compose
-- HikariCP, Flyway, dotenv-java
+- Jackson (JSON serialization)
+- Local file-based data storage (`data/` directory)
 - JUnit 5
 
 ## Build, Test, Run
@@ -27,19 +27,12 @@
 ./gradlew :backend:test
 ./gradlew :backend:test --tests "VinylServiceImplTest"
 
-# Run app (requires PostgreSQL running)
+# Run app (no database setup needed)
 ./gradlew :frontend:run
 
 # Fat JAR
 ./gradlew :frontend:shadowJar
 java -jar src/frontend/build/libs/frontend-1.0.0-all.jar
-
-# Database
-docker-compose up -d
-docker-compose ps
-docker-compose logs postgres
-docker-compose down
-docker-compose down -v
 ```
 
 ## Architecture and Data Model
@@ -47,17 +40,19 @@ docker-compose down -v
 ### Module layout
 ```text
 src/backend
-  - config/ (DatabaseConfig: HikariCP + Flyway + dotenv)
-  - model/
-  - repository/ (JDBC persistence)
+  - model/ (Vinyl, exceptions)
+  - repository/ (FileVinylRepository, FileGenreRepository)
   - service/ (business validation, duplicate checks)
-  - resources/db/migration/ (Flyway SQL)
 
 src/frontend
   - ui/Main.java
   - ui/controller/
   - resources/fxml/
   - resources/images/
+
+data/
+  - vinyls.json (auto-created on first run)
+  - genres.json (auto-created on first run)
 ```
 
 ### Main behavioral conventions
@@ -68,10 +63,11 @@ src/frontend
 - Backend validation: service layer throws explicit validation/duplicate exceptions
 - UI list focus: `| image | title | artist | price |`
 
-### Default DB setup
-- DB URL: `jdbc:postgresql://localhost:5432/vinylmaster`
-- DB user/password: `app` / `app`
-- Flyway runs automatically on app startup
+### Default data storage
+- Data location: `data/` directory (auto-created)
+- Vinyl records file: `data/vinyls.json` (JSON array)
+- Genres file: `data/genres.json` (JSON string array)
+- Format: Pretty-printed JSON (human-readable)
 
 ## AsciiDoc Docs Pipeline
 - Source: `asciidocs/docs/`

@@ -7,7 +7,6 @@ Vinyl Master is a JavaFX desktop application for managing vinyl record collectio
 ## Prerequisites
 
 - **Java 21** (or later)
-- **Docker** (for PostgreSQL database)
 - **Gradle 8.11+** (wrapper included)
 
 ## Project Structure
@@ -19,9 +18,8 @@ vinylmaster/
 ├── src/
 │   ├── backend/                    # Backend module (data layer + business logic)
 │   │   └── src/main/java/at/htl/leonding/vinylmaster/
-│   │       ├── config/            # Database configuration (HikariCP)
 │   │       ├── model/             # Entity classes (Vinyl)
-│   │       ├── repository/        # Data access layer (JDBC)
+│   │       ├── repository/        # Data access layer (file-based JSON)
 │   │       └── service/           # Business logic layer
 │   └── frontend/                   # Frontend module (JavaFX UI)
 │       └── src/main/
@@ -31,8 +29,8 @@ vinylmaster/
 │           └── resources/
 │               ├── fxml/         # FXML view definitions
 │               └── images/       # UI assets
-├── docker-compose.yml             # PostgreSQL database setup
-├── .env                           # Database configuration
+├── data/                           # Local data storage (auto-created, excluded from git)
+├── .gitignore
 └── build.gradle.kts              # Root build configuration
 ```
 
@@ -45,21 +43,7 @@ git clone <repository-url>
 cd 2526-3bhif-syp-project-vinyl-master
 ```
 
-### 2. Start the Database
-
-Start the PostgreSQL database using Docker Compose:
-
-```bash
-docker-compose up -d
-```
-
-This will:
-- Start PostgreSQL on port 5432
-- Create database `vinylmaster`
-- Use credentials: username=`app`, password=`app`
-- Run Flyway migrations automatically on first application start
-
-### 3. Build the Project
+### 2. Build the Project
 
 ```bash
 ./gradlew build
@@ -70,7 +54,7 @@ This will:
 - Run all unit tests
 - Create distribution packages
 
-### 4. Run the Application
+### 3. Run the Application
 
 ```bash
 ./gradlew :frontend:run
@@ -82,6 +66,8 @@ Or build and run the standalone JAR:
 ./gradlew :frontend:shadowJar
 java -jar src/frontend/build/libs/frontend-1.0.0-all.jar
 ```
+
+The application will automatically create a `data/` directory to store all vinyl records as JSON files.
 
 ## Development
 
@@ -98,37 +84,16 @@ java -jar src/frontend/build/libs/frontend-1.0.0-all.jar
 ./gradlew test --info
 ```
 
-### Database Management
+### Data Storage
 
-**Check database status:**
-```bash
-docker-compose ps
-```
+All vinyl records and genres are stored locally in JSON format:
+- **Location:** `data/` directory (relative to application)
+- **Files:**
+  - `data/vinyls.json` — All vinyl records
+  - `data/genres.json` — Genre list
+- **Format:** Pretty-printed JSON (human-readable, easy to inspect)
 
-**Stop database:**
-```bash
-docker-compose down
-```
-
-**Reset database (WARNING: deletes all data):**
-```bash
-docker-compose down -v
-docker-compose up -d
-```
-
-### Configuration
-
-Database connection settings are in `.env` file:
-```
-DB_HOST=localhost
-DB_PORT=5432
-DB_NAME=vinylmaster
-DB_USER=app
-DB_PASSWORD=app
-```
-
-User-generated cover images are stored locally in `~/.vinylmaster/covers` and are not part of the repository.
-This keeps the project portable and lets every machine start with a blank state.
+The `data/` directory is automatically created on first application start.
 
 ## Features
 
@@ -156,9 +121,8 @@ This keeps the project portable and lets every machine start with a blank state.
 ### Architecture
 
 **Backend (Service + Repository Pattern):**
-- `Repository Layer`: JDBC-based data access with HikariCP connection pooling
+- `Repository Layer`: File-based JSON persistence
 - `Service Layer`: Business logic including validation and duplicate checking
-- `Flyway`: Database migrations for schema versioning
 
 **Frontend (JavaFX + FXML):**
 - Model-View-Controller pattern
@@ -170,12 +134,9 @@ This keeps the project portable and lets every machine start with a blank state.
 
 - **Language**: Java 21
 - **UI Framework**: JavaFX 23
-- **Database**: PostgreSQL (latest)
-- **Connection Pool**: HikariCP 6.2
-- **Migration Tool**: Flyway 11.1
+- **Persistence**: Local JSON files (Jackson)
 - **Build Tool**: Gradle 8.11
 - **Testing**: JUnit 5
-- **Containerization**: Docker
 
 ## Documentation
 
@@ -184,18 +145,14 @@ https://2526-3bhif-syp.github.io/2526-3bhif-syp-project-vinyl-master/
 
 ## Troubleshooting
 
-**Database connection failed:**
-- Ensure Docker is running
-- Check database container: `docker-compose logs postgres`
-- Verify `.env` file exists with correct credentials
-
 **Application won't start:**
 - Ensure Java 21 is installed: `java --version`
 - Check Gradle build: `./gradlew build --info`
+- Ensure write permissions in the application directory (for `data/` folder creation)
 
 **Tests failing:**
-- Database must be running for integration tests
-- Reset database: `docker-compose down -v && docker-compose up -d`
+- Run tests with: `./gradlew test --info`
+- Check test output for specific error messages
 
 ## License
 
