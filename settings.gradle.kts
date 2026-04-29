@@ -1,6 +1,7 @@
 rootProject.name = "vinylmaster"
 
-include("backend", "frontend")
+include("model", "view", "controller")
 
-project(":backend").projectDir = file("src/backend")
-project(":frontend").projectDir = file("src/frontend")
+project(":model").projectDir = file("src/model")
+project(":view").projectDir = file("src/view")
+project(":controller").projectDir = file("src/controller")

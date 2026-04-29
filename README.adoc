@@ -11,27 +11,32 @@ Vinyl Master is a JavaFX desktop application for managing vinyl record collectio
 
 ## Project Structure
 
-This is a multi-module Gradle project with clear separation between backend and frontend:
+This is a multi-module Gradle project following the Model-View-Controller (MVC) architectural pattern:
 
 ```
 vinylmaster/
 ├── src/
-│   ├── backend/                    # Backend module (data layer + business logic)
+│   ├── model/                          # Model module (data layer + business logic)
 │   │   └── src/main/java/at/htl/leonding/vinylmaster/
-│   │       ├── model/             # Entity classes (Vinyl)
-│   │       ├── repository/        # Data access layer (file-based JSON)
-│   │       └── service/           # Business logic layer
-│   └── frontend/                   # Frontend module (JavaFX UI)
-│       └── src/main/
-│           ├── java/at/htl/leonding/vinylmaster/ui/
-│           │   ├── controller/   # JavaFX controllers
-│           │   └── Main.java     # Application entry point
-│           └── resources/
-│               ├── fxml/         # FXML view definitions
-│               └── images/       # UI assets
-├── data/                           # Local data storage (auto-created, excluded from git)
+│   │       ├── model/                 # Entity classes (Vinyl, Genre)
+│   │       ├── repository/            # Data access layer (file-based JSON)
+│   │       ├── service/               # Business logic layer
+│   │       └── config/                # Configuration
+│   ├── view/                           # View module (JavaFX UI resources)
+│   │   └── src/main/resources/
+│   │       ├── fxml/                 # FXML view definitions
+│   │       └── images/               # UI assets
+│   └── controller/                     # Controller module (UI orchestration)
+│       └── src/main/java/at/htl/leonding/vinylmaster/
+│           └── ui/
+│               ├── controller/       # JavaFX controllers
+│               ├── image/            # Image service
+│               └── Main.java         # Application entry point
+├── data/                               # Local data storage (auto-created, excluded from git)
+│   ├── vinyls.json                   # All vinyl records
+│   └── genres.json                   # Genre list
 ├── .gitignore
-└── build.gradle.kts              # Root build configuration
+└── build.gradle.kts                  # Root build configuration
 ```
 
 ## Setup Instructions
@@ -57,14 +62,14 @@ This will:
 ### 3. Run the Application
 
 ```bash
-./gradlew :frontend:run
+./gradlew :controller:run
 ```
 
 Or build and run the standalone JAR:
 
 ```bash
-./gradlew :frontend:shadowJar
-java -jar src/frontend/build/libs/frontend-1.0.0-all.jar
+./gradlew :controller:shadowJar
+java -jar src/controller/build/libs/frontend-1.0.0-all.jar
 ```
 
 The application will automatically create a `data/` directory to store all vinyl records as JSON files.
@@ -77,8 +82,8 @@ The application will automatically create a `data/` directory to store all vinyl
 # Run all tests
 ./gradlew test
 
-# Run only backend tests
-./gradlew :backend:test
+# Run only model tests
+./gradlew :model:test
 
 # Run with detailed output
 ./gradlew test --info

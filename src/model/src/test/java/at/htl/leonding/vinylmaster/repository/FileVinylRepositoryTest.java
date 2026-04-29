@@ -1,11 +1,14 @@
 package at.htl.leonding.vinylmaster.repository;
 
 import at.htl.leonding.vinylmaster.model.Vinyl;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import java.math.BigDecimal;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
@@ -14,10 +17,13 @@ import static org.junit.jupiter.api.Assertions.*;
 class FileVinylRepositoryTest {
 
     private FileVinylRepository repository;
+    
+    @TempDir
+    Path tempDir;
 
     @BeforeEach
     void setUp() {
-        repository = new FileVinylRepository();
+        repository = new FileVinylRepository(tempDir.toString());
     }
 
     @Test
@@ -52,7 +58,7 @@ class FileVinylRepositoryTest {
         Long id = saved.getId();
         
         // Create new repository instance (simulates app restart)
-        FileVinylRepository newRepository = new FileVinylRepository();
+        FileVinylRepository newRepository = new FileVinylRepository(tempDir.toString());
         var found = newRepository.findById(id);
         
         assertTrue(found.isPresent());
@@ -63,6 +69,6 @@ class FileVinylRepositoryTest {
     void testFileIsCreated() {
         repository.save(new Vinyl("Any Album", "Any Artist", "Rock", 2020, new BigDecimal("10.00")));
         
-        assertTrue(Files.exists(Paths.get("data", "vinyls.json")));
+        assertTrue(Files.exists(tempDir.resolve("vinyls.json")));
     }
 }

@@ -23,14 +23,26 @@ public class FileGenreRepository implements GenreRepository {
     private Set<String> genres;
 
     public FileGenreRepository() {
-        this.dataFilePath = Paths.get(DATA_DIR, GENRES_FILE);
+        this(DATA_DIR);
+    }
+
+    protected FileGenreRepository(String dataDir) {
+        this.dataFilePath = resolveDataPath(dataDir, GENRES_FILE);
         initializeDataDirectory();
         loadGenres();
     }
 
+    private static Path resolveDataPath(String dataDir, String fileName) {
+        Path rootPath = Paths.get(System.getProperty("user.dir"));
+        if (fileName.isEmpty()) {
+            return rootPath.resolve(dataDir);
+        }
+        return rootPath.resolve(dataDir).resolve(fileName);
+    }
+
     private void initializeDataDirectory() {
         try {
-            Path dir = Paths.get(DATA_DIR);
+            Path dir = dataFilePath.getParent();
             if (!Files.exists(dir)) {
                 Files.createDirectories(dir);
             }

@@ -25,16 +25,28 @@ public class FileVinylRepository implements VinylRepository {
     private List<Vinyl> vinyls;
 
     public FileVinylRepository() {
-        this.dataFilePath = Paths.get(DATA_DIR, VINYLS_FILE);
+        this(DATA_DIR);
+    }
+
+    protected FileVinylRepository(String dataDir) {
+        this.dataFilePath = resolveDataPath(dataDir, VINYLS_FILE);
         this.idCounter = new AtomicLong(0);
         initializeDataDirectory();
         loadVinyls();
         initializeIdCounter();
     }
 
+    private static Path resolveDataPath(String dataDir, String fileName) {
+        Path rootPath = Paths.get(System.getProperty("user.dir"));
+        if (fileName.isEmpty()) {
+            return rootPath.resolve(dataDir);
+        }
+        return rootPath.resolve(dataDir).resolve(fileName);
+    }
+
     private void initializeDataDirectory() {
         try {
-            Path dir = Paths.get(DATA_DIR);
+            Path dir = dataFilePath.getParent();
             if (!Files.exists(dir)) {
                 Files.createDirectories(dir);
             }

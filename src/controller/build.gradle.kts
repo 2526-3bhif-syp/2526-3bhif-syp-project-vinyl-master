@@ -5,8 +5,9 @@ plugins {
 }
 
 dependencies {
-    // Backend module
-    implementation(project(":backend"))
+    // Model and View modules
+    implementation(project(":model"))
+    implementation(project(":view"))
     
     // JUnit 5 for testing
     testImplementation("org.junit.jupiter:junit-jupiter:5.11.4")
