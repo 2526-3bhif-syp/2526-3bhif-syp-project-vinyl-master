@@ -1,4 +1,4 @@
-name: Docs
+cdname: Docs
 
 on:
   push:

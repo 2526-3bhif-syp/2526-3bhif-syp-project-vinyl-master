@@ -1,6 +1,7 @@
 package at.htl.leonding.vinylmaster.ui.controller;
 
 import at.htl.leonding.vinylmaster.model.Vinyl;
+import at.htl.leonding.vinylmaster.model.VinylSortCriteria;
 import at.htl.leonding.vinylmaster.service.VinylServiceImpl;
 import at.htl.leonding.vinylmaster.ui.image.CoverImageService;
 import javafx.animation.FadeTransition;
@@ -12,6 +13,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SplitPane;
@@ -87,6 +89,9 @@ public class MainViewController {
     @FXML
     private SplitPane collectionSplitPane;
 
+    @FXML
+    private ComboBox<VinylSortCriteria> sortComboBox;
+
     private final VinylServiceImpl vinylService;
     private final CoverImageService coverImageService;
     private final ObservableList<Vinyl> vinylList;
@@ -95,6 +100,7 @@ public class MainViewController {
     private final Map<String, Image> imageCache;
     private Pane addVinylFormPane;
     private javafx.collections.transformation.FilteredList<Vinyl> filteredVinyls;
+    private javafx.collections.transformation.SortedList<Vinyl> sortedVinyls;
     private Vinyl selectedVinyl;
     private ParallelTransition detailsPanelAnimation;
 
@@ -112,14 +118,15 @@ public class MainViewController {
         setupListView();
         setupDetailsPane();
         setupSearch();
+        setupSort();
         loadVinyls();
         addVinylButton.setOnAction(event -> showVinylForm(null));
     }
 
     private void setupListView() {
-        // wrap the observable list with a FilteredList so we can filter by search
         filteredVinyls = new javafx.collections.transformation.FilteredList<>(vinylList, p -> true);
-        vinylListView.setItems(filteredVinyls);
+        sortedVinyls = new javafx.collections.transformation.SortedList<>(filteredVinyls);
+        vinylListView.setItems(sortedVinyls);
         vinylListView.setCellFactory(listView -> new VinylListCell());
         vinylListView.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
             if (oldVal != null && oldVal != newVal) {
@@ -145,6 +152,12 @@ public class MainViewController {
         editVinylButton.setOnAction(event -> handleEditVinyl());
         deleteVinylButton.setOnAction(event -> handleDeleteVinyl());
         showVinylDetails(null);
+    }
+
+    private void setupSort() {
+        sortComboBox.getItems().setAll(VinylSortCriteria.values());
+        sortComboBox.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) ->
+                sortedVinyls.setComparator(newVal == null ? null : newVal.toComparator()));
     }
 
     private void setupSearch() {
