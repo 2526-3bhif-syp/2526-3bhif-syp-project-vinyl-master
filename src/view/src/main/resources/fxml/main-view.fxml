@@ -2,6 +2,7 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.SplitPane?>
@@ -21,6 +22,7 @@
             <Label text="Vinyl Collection" style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
             <Region HBox.hgrow="ALWAYS"/>
             <TextField fx:id="searchField" promptText="Search..." prefWidth="200" />
+            <ComboBox fx:id="sortComboBox" promptText="Sort by..." prefWidth="140"/>
             <Button fx:id="addVinylButton" text="+ Add Vinyl"
                     style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 10 20;"/>
         </HBox>
