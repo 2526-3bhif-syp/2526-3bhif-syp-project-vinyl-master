@@ -23,6 +23,18 @@ import java.nio.file.Path;
 import java.util.List;
 
 public class AddVinylFormController {
+    private static final String BASE_INPUT_STYLE =
+            "-fx-background-color: #e3e6db; -fx-text-fill: #8c525c; -fx-prompt-text-fill: #8c525c; "
+                    + "-fx-background-radius: 6; -fx-border-radius: 6; -fx-border-color: #8c525c;";
+    private static final String BASE_COMBO_STYLE =
+            "-fx-background-color: #e3e6db; -fx-text-fill: #8c525c; -fx-prompt-text-fill: #8c525c; "
+                    + "-fx-background-radius: 6; -fx-border-radius: 6; -fx-border-color: #8c525c; -fx-mark-color: #8c525c;";
+    private static final String SUBMIT_BUTTON_ENABLED_STYLE =
+            "-fx-background-color: #8c525c; -fx-text-fill: #e3e6db; -fx-padding: 10 20; -fx-background-radius: 6;";
+    private static final String SUBMIT_BUTTON_DISABLED_STYLE =
+            "-fx-background-color: #e3e6db; -fx-text-fill: #8c525c; -fx-padding: 10 20; "
+                    + "-fx-background-radius: 6; -fx-border-color: #8c525c; -fx-border-radius: 6;";
+
     @FXML
     private VBox formContainer;
 
@@ -83,12 +95,14 @@ public class AddVinylFormController {
     @FXML
     public void initialize() {
         loadGenres();
+        styleGenreComboBoxText();
         setupValidation();
         setupImageSelection();
         saveButton.setOnAction(event -> handleSave());
         cancelButton.setOnAction(event -> handleCancel());
         chooseImageButton.setOnAction(event -> chooseImageFile());
         clearImageButton.setOnAction(event -> clearSelectedImage());
+        updateSubmitButtonState();
     }
 
     private void loadGenres() {
@@ -96,6 +110,33 @@ public class AddVinylFormController {
         genreComboBox.getItems().clear();
         genreComboBox.getItems().addAll(genres);
         genreComboBox.setEditable(true);
+        genreComboBox.setStyle(BASE_COMBO_STYLE);
+        genreComboBox.getEditor().setStyle(BASE_INPUT_STYLE);
+    }
+
+    private void styleGenreComboBoxText() {
+        genreComboBox.setButtonCell(new ListCell<>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(empty || item == null ? null : item);
+                setStyle("-fx-text-fill: #8c525c; -fx-background-color: transparent;");
+            }
+        });
+
+        genreComboBox.setCellFactory(listView -> new ListCell<>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                    setStyle("-fx-background-color: #e3e6db;");
+                } else {
+                    setText(item);
+                    setStyle("-fx-text-fill: #8c525c; -fx-background-color: #e3e6db;");
+                }
+            }
+        });
     }
 
     private void setupValidation() {
@@ -105,12 +146,20 @@ public class AddVinylFormController {
                 validateTitle();
             }
         });
+        titleField.textProperty().addListener((observable, oldValue, newValue) -> {
+            validateTitle();
+            updateSubmitButtonState();
+        });
         
         // Artist validation
         artistField.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue) {
                 validateArtist();
             }
+        });
+        artistField.textProperty().addListener((observable, oldValue, newValue) -> {
+            validateArtist();
+            updateSubmitButtonState();
         });
         
         // Year validation
@@ -119,12 +168,20 @@ public class AddVinylFormController {
                 validateYear();
             }
         });
+        yearField.textProperty().addListener((observable, oldValue, newValue) -> {
+            validateYear();
+            updateSubmitButtonState();
+        });
         
         // Price validation
         priceField.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue) {
                 validatePrice();
             }
+        });
+        priceField.textProperty().addListener((observable, oldValue, newValue) -> {
+            validatePrice();
+            updateSubmitButtonState();
         });
     }
 
@@ -271,9 +328,51 @@ public class AddVinylFormController {
 
     private void setFieldError(TextField field, boolean hasError) {
         if (hasError) {
-            field.setStyle("-fx-border-color: red; -fx-border-width: 2px;");
+            field.setStyle(BASE_INPUT_STYLE + " -fx-border-color: red; -fx-border-width: 2px;");
         } else {
-            field.setStyle("");
+            field.setStyle(BASE_INPUT_STYLE);
+        }
+    }
+
+    private void updateSubmitButtonState() {
+        boolean canSubmit = isFormSubmittable();
+        saveButton.setDisable(!canSubmit);
+        saveButton.setStyle(canSubmit ? SUBMIT_BUTTON_ENABLED_STYLE : SUBMIT_BUTTON_DISABLED_STYLE);
+    }
+
+    private boolean isFormSubmittable() {
+        return isRequiredTextPresent(titleField.getText())
+                && isRequiredTextPresent(artistField.getText())
+                && isValidYearValue(yearField.getText())
+                && isValidPriceValue(priceField.getText());
+    }
+
+    private boolean isRequiredTextPresent(String value) {
+        return value != null && !value.trim().isEmpty();
+    }
+
+    private boolean isValidYearValue(String value) {
+        if (value == null || value.trim().isEmpty()) {
+            return false;
+        }
+
+        try {
+            int year = Integer.parseInt(value.trim());
+            return year >= 1900 && year <= 2100;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
+    private boolean isValidPriceValue(String value) {
+        if (value == null || value.trim().isEmpty()) {
+            return true;
+        }
+
+        try {
+            return new BigDecimal(value.trim()).signum() >= 0;
+        } catch (NumberFormatException e) {
+            return false;
         }
     }
 
@@ -350,7 +449,26 @@ public class AddVinylFormController {
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(message);
+        styleAlert(alert);
         alert.showAndWait();
+    }
+
+    private void styleAlert(Alert alert) {
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.setStyle("-fx-background-color: #e3e6db; -fx-border-color: #8c525c; -fx-border-width: 1;");
+
+        String textStyle = "-fx-text-fill: #8c525c;";
+        for (javafx.scene.Node node : dialogPane.lookupAll(".label")) {
+            if (node instanceof Label label) {
+                label.setStyle(textStyle);
+            }
+        }
+
+        for (javafx.scene.Node node : dialogPane.lookupAll(".button")) {
+            if (node instanceof Button button) {
+                button.setStyle("-fx-background-color: #8c525c; -fx-text-fill: #e3e6db; -fx-background-radius: 6;");
+            }
+        }
     }
 
     public void setMainViewController(MainViewController mainViewController) {
@@ -376,6 +494,7 @@ public class AddVinylFormController {
         yearField.setText(vinyl.getYear() == null ? "" : vinyl.getYear().toString());
         priceField.setText(vinyl.getPrice() == null ? "" : vinyl.getPrice().toString());
         updateImagePreview();
+        updateSubmitButtonState();
     }
 
     private void applyImageChanges(Vinyl vinyl) throws IOException, ValidationException, DuplicateVinylException {
