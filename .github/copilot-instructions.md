@@ -2,14 +2,14 @@
 
 ## Project Snapshot
 - **App:** JavaFX desktop app for vinyl collection management.
-- **Architecture:** Multi-module Gradle project with clear Backend/Frontend split.
+- **Architecture:** Multi-module Gradle project following Model-View-Controller (MVC) pattern.
 - **Backend pattern:** Service + Repository, local JSON file persistence.
 - **Status:** MVP complete (add vinyl flow, validation, duplicate detection, service-layer tests).
 - **Domain direction:** storage locations, statistics, search/filter, barcode scan, Discogs integration.
 
 ## Core Stack
 - Java 21, JavaFX 23
-- Gradle multi-module (`src/backend`, `src/frontend`)
+- Gradle multi-module (`src/model`, `src/view`, `src/controller`)
 - Jackson (JSON serialization)
 - Local file-based data storage (`data/` directory)
 - JUnit 5
@@ -19,36 +19,41 @@
 # Build
 ./gradlew build
 ./gradlew clean build
-./gradlew :backend:build
-./gradlew :frontend:build
+./gradlew :model:build
+./gradlew :view:build
+./gradlew :controller:build
 
 # Test
 ./gradlew test
-./gradlew :backend:test
-./gradlew :backend:test --tests "VinylServiceImplTest"
+./gradlew :model:test
+./gradlew :model:test --tests "VinylServiceImplTest"
 
 # Run app (no database setup needed)
-./gradlew :frontend:run
+./gradlew :controller:run
 
 # Fat JAR
-./gradlew :frontend:shadowJar
-java -jar src/frontend/build/libs/frontend-1.0.0-all.jar
+./gradlew :controller:shadowJar
+java -jar src/controller/build/libs/frontend-1.0.0-all.jar
 ```
 
 ## Architecture and Data Model
 
 ### Module layout
 ```text
-src/backend
-  - model/ (Vinyl, exceptions)
+src/model
+  - model/ (Vinyl, Genre entities)
   - repository/ (FileVinylRepository, FileGenreRepository)
   - service/ (business validation, duplicate checks)
+  - config/ (configuration)
 
-src/frontend
-  - ui/Main.java
-  - ui/controller/
-  - resources/fxml/
-  - resources/images/
+src/view
+  - resources/fxml/ (FXML view definitions)
+  - resources/images/ (UI assets)
+
+src/controller
+  - ui/Main.java (application entry point)
+  - ui/controller/ (JavaFX controllers)
+  - ui/image/ (image service)
 
 data/
   - vinyls.json (auto-created on first run)
@@ -82,7 +87,7 @@ data/
 - App files that are part of the product **do** belong in git.
 - If you create a new file that matters for the system, **stage it immediately** (`git add <file>`).
 - For image/runtime portability (issue **#14**):
-  - Keep static app assets in `src/frontend/src/main/resources/**`
+  - Keep static app assets in `src/view/src/main/resources/**`
   - Store user cover files in `~/.vinylmaster/covers`
   - Do not use repository-relative paths for user runtime data
   - Keep `.gitignore` in sync with generated/runtime folders

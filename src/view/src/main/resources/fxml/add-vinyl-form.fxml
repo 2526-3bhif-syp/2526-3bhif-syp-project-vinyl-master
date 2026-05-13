@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+
+<StackPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+           fx:controller="at.htl.leonding.vinylmaster.ui.controller.AddVinylFormController"
+           alignment="CENTER"
+           style="-fx-background-color: rgba(0, 0, 0, 0.5);">
+    
+    <VBox fx:id="formContainer" spacing="15" alignment="TOP_CENTER" maxWidth="500" maxHeight="680"
+          style="-fx-background-color: #e3e6db; -fx-background-radius: 10; -fx-border-color: #8c525c; -fx-border-radius: 10; -fx-padding: 30;">
+        
+        <Label fx:id="formTitleLabel" text="Add New Vinyl" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #8c525c;"/>
+        
+        <Separator/>
+        
+        <VBox spacing="5">
+            <Label text="Title *" style="-fx-font-weight: bold; -fx-text-fill: #8c525c;"/>
+            <TextField fx:id="titleField" promptText="Enter vinyl title"
+                       style="-fx-background-color: #e3e6db; -fx-text-fill: #8c525c; -fx-prompt-text-fill: #8c525c; -fx-background-radius: 6; -fx-border-radius: 6; -fx-border-color: #8c525c;"/>
+        </VBox>
+        
+        <VBox spacing="5">
+            <Label text="Artist *" style="-fx-font-weight: bold; -fx-text-fill: #8c525c;"/>
+            <TextField fx:id="artistField" promptText="Enter artist name"
+                       style="-fx-background-color: #e3e6db; -fx-text-fill: #8c525c; -fx-prompt-text-fill: #8c525c; -fx-background-radius: 6; -fx-border-radius: 6; -fx-border-color: #8c525c;"/>
+        </VBox>
+        
+        <VBox spacing="5">
+            <Label text="Genre" style="-fx-font-weight: bold; -fx-text-fill: #8c525c;"/>
+            <ComboBox fx:id="genreComboBox" promptText="Select or enter genre" 
+                      prefWidth="440" editable="true"
+                      style="-fx-background-color: #e3e6db; -fx-text-fill: #8c525c; -fx-prompt-text-fill: #8c525c; -fx-background-radius: 6; -fx-border-radius: 6; -fx-border-color: #8c525c;"/>
+        </VBox>
+        
+        <VBox spacing="5">
+            <Label text="Year *" style="-fx-font-weight: bold; -fx-text-fill: #8c525c;"/>
+            <TextField fx:id="yearField" promptText="Enter year (e.g., 1975)"
+                       style="-fx-background-color: #e3e6db; -fx-text-fill: #8c525c; -fx-prompt-text-fill: #8c525c; -fx-background-radius: 6; -fx-border-radius: 6; -fx-border-color: #8c525c;"/>
+        </VBox>
+        
+        <VBox spacing="5">
+            <Label text="Price (€)" style="-fx-font-weight: bold; -fx-text-fill: #8c525c;"/>
+            <TextField fx:id="priceField" promptText="Enter price in euros"
+                       style="-fx-background-color: #e3e6db; -fx-text-fill: #8c525c; -fx-prompt-text-fill: #8c525c; -fx-background-radius: 6; -fx-border-radius: 6; -fx-border-color: #8c525c;"/>
+        </VBox>
+
+        <VBox spacing="5">
+            <Label text="Cover Image (optional)" style="-fx-font-weight: bold; -fx-text-fill: #8c525c;"/>
+            <VBox fx:id="imageDropZone" spacing="8" alignment="CENTER"
+                  style="-fx-border-color: #8c525c; -fx-border-radius: 8; -fx-background-color: #e3e6db; -fx-background-radius: 8; -fx-padding: 12;">
+                <Label text="Drag and drop image here (.jpg/.jpeg/.png, max 1 MB)" wrapText="true"
+                       style="-fx-text-fill: #8c525c;"/>
+                <ImageView fx:id="imagePreview" fitWidth="64" fitHeight="64" preserveRatio="true"/>
+                <Label fx:id="imageFileLabel" text="No image selected" style="-fx-text-fill: #8c525c;"/>
+                <HBox spacing="8" alignment="CENTER">
+                    <Button fx:id="chooseImageButton" text="Choose Image"
+                            style="-fx-background-color: #8c525c; -fx-text-fill: #e3e6db; -fx-background-radius: 6;"/>
+                    <Button fx:id="clearImageButton" text="Clear"
+                            style="-fx-background-color: #8c525c; -fx-text-fill: #e3e6db; -fx-background-radius: 6;"/>
+                </HBox>
+            </VBox>
+        </VBox>
+        
+        <Label text="* Required fields" style="-fx-font-size: 10px; -fx-text-fill: #8c525c;"/>
+        
+        <HBox spacing="10" alignment="CENTER_RIGHT">
+            <padding>
+                <Insets top="10"/>
+            </padding>
+            <Button fx:id="cancelButton" text="Cancel" 
+                    style="-fx-background-color: #8c525c; -fx-text-fill: #e3e6db; -fx-padding: 10 20; -fx-background-radius: 6;"/>
+            <Button fx:id="saveButton" text="Save" 
+                    style="-fx-background-color: #8c525c; -fx-text-fill: #e3e6db; -fx-padding: 10 20; -fx-background-radius: 6;"/>
+        </HBox>
+    </VBox>
+</StackPane>

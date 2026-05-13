@@ -586,3 +586,157 @@ Using Template B
 - Commit and push:
   - `src/backend/src/main/resources/db/migration/V2__add_image_path_to_vinyl.sql`
   - `src/backend/src/main/resources/db/migration/V3__add_storage_location_and_notes_to_vinyl.sql`
+
+---
+
+Using Template A
+
+# Issue #15: Remove Docker and DB from the project
+
+## Entry Metadata
+- **Date:** 2026-04-22
+- **Issue URL:** https://github.com/2526-3bhif-syp/2526-3bhif-syp-project-vinyl-master/issues/15
+- **Issue Status:** closed
+- **Session Goal:** Document completion of Docker and PostgreSQL removal, transition to local file-based persistence.
+
+## User Request
+Vinyl Master is a local desktop app. Having Docker and a PostgreSQL database is unnecessary overhead. Replace the database with local file-based persistence (JSON serialization) and remove Docker entirely.
+
+## Acceptance Criteria (from issue/user)
+1. Remove Docker setup from the project
+2. Remove PostgreSQL database dependency
+3. Replace with local file-based persistence (e.g., JSON ObjectOutputStream)
+4. Ensure no conflicts with the backend architecture after removal
+
+## Clarification Questions
+None - scope was clear and all decisions were captured during implementation.
+
+## Confirmed Decisions
+- **Persistence strategy:** Jackson-based JSON serialization to local files (`data/vinyls.json`, `data/genres.json`)
+- **Data location:** `data/` directory in project root (auto-created on first run)
+- **Repository pattern:** File-based `FileVinylRepository` and `FileGenreRepository` with service layer
+- **Backwards compatibility:** Not applicable (no production data to migrate)
+- **Cover storage:** User home directory `~/.vinylmaster/covers/` (not in repository)
+
+## Open Questions (Blocking)
+None - issue closed as completed.
+
+Using Template [A]
+
+# Issue #16: Fixing the project structure
+
+## Entry Metadata
+- **Date:** 2026-04-22
+- **Issue URL:** https://github.com/2526-3bhif-syp/2526-3bhif-syp-project-vinyl-master/issues/16
+- **Issue Status:** open
+- **Session Goal:** Consolidate data folders, update repository paths, adjust tests, and update documentation
+
+## User Request
+Reorganize the project structure after Docker removal so frontend and backend follow the MVP pattern and share a single root-level data folder. Update code and documentation accordingly.
+
+## Acceptance Criteria (from issue/user)
+1. Single root-level data folder used by backend and frontend
+2. Repositories updated to use root data path and accept custom data dir for tests
+3. Duplicate data folders removed from src/backend and src/frontend
+4. Unit tests updated to use temporary directories and pass
+5. Documentation (README) updated to reflect new structure
+
+## Clarification Questions
+1. None — scope was clarified by the user and decisions were recorded.
+
+## Confirmed Decisions
+- Data location: `data/` at project root (auto-created on first run)
+- Repositories: `FileVinylRepository` and `FileGenreRepository` now resolve paths relative to application root and accept an optional data-dir constructor for testing
+- Tests: Use JUnit `@TempDir` to avoid altering project files during tests
+- .gitignore: keep `data/` ignored so local data isn't committed
+
+## Open Questions (Blocking)
+- None
+
+Using Template [A]
+
+# Issue #16: Fixing the project structure
+
+## Entry Metadata
+- **Date:** 2026-04-22
+- **Issue URL:** https://github.com/2526-3bhif-syp/2526-3bhif-syp-project-vinyl-master/issues/16
+- **Issue Status:** open
+- **Session Goal:** Consolidate data folders, update repository paths, adjust tests, and update documentation
+
+## User Request
+Reorganize the project structure after Docker removal so frontend and backend follow the MVP pattern and share a single root-level data folder. Update code and documentation accordingly.
+
+## Acceptance Criteria (from issue/user)
+1. Single root-level data folder used by backend and frontend
+2. Repositories updated to use root data path and accept custom data dir for tests
+3. Duplicate data folders removed from src/backend and src/frontend
+4. Unit tests updated to use temporary directories and pass
+5. Documentation (README) updated to reflect new structure
+
+## Clarification Questions
+1. None — scope was clarified by the user and decisions were recorded.
+
+## Confirmed Decisions
+- Data location: `data/` at project root (auto-created on first run)
+- Repositories: `FileVinylRepository` and `FileGenreRepository` now resolve paths relative to application root and accept an optional data-dir constructor for testing
+- Tests: Use JUnit `@TempDir` to avoid altering project files during tests
+- .gitignore: keep `data/` ignored so local data isn't committed
+
+## Open Questions (Blocking)
+- None
+
+Using Template [A]
+
+# Issue #16: Refactored Project Structure - Model/View/Controller Pattern
+
+## Entry Metadata
+- **Date:** 2026-04-29
+- **Issue URL:** https://github.com/2526-3bhif-syp/2526-3bhif-syp-project-vinyl-master/issues/16
+- **Issue Status:** open
+- **Session Goal:** Restructure project from backend/frontend modules to Model/View/Controller architectural pattern
+
+## User Request
+Update the project structure according to Issue #16 by splitting folders from the current backend/frontend split into Controller, Model, and View modules following the MVC pattern. Update all documentation accordingly.
+
+## Acceptance Criteria (from issue/user)
+1. Project structure refactored from `src/backend` and `src/frontend` to `src/model`, `src/view`, and `src/controller`
+2. Model module contains: entity classes, repositories, services, exceptions, and configuration
+3. View module contains: FXML definitions and UI assets (images)
+4. Controller module contains: UI controllers, image services, and Main.java entry point
+5. All package imports updated to reflect new module structure
+6. settings.gradle.kts and build.gradle.kts files updated for three modules
+7. Tests continue to pass
+8. README.adoc updated with new structure documentation
+9. Session documented in chat.md
+
+## Clarification Questions
+1. **Target architecture:** Should the project follow MVC with Model/View/Controller split?
+   - **Answer:** Yes, confirmed with user. Structure: `src/model/`, `src/view/`, `src/controller/`
+
+## Confirmed Decisions
+- **Module structure:** Three modules (model, view, controller) instead of two (backend, frontend)
+  - Model: All business logic, data models, repositories, services
+  - View: FXML layouts and static image assets
+  - Controller: JavaFX controllers, services to orchestrate UI, Main entry point
+- **Build configuration:** Updated settings.gradle.kts to include three modules
+- **Build files:** Created/updated build.gradle.kts for each module with appropriate dependencies
+- **Package structure:** Maintained `at.htl.leonding.vinylmaster.*` naming convention
+- **Entry point:** Main.java remains in controller module at `ui/Main.java`
+- **Data location:** Maintained `data/` at project root (no changes)
+- **Gradle plugins:** Used consistent plugin configuration across modules
+
+## Implementation Summary
+1. ✅ Created directory structure for model, view, and controller modules
+2. ✅ Copied backend files to model module (model/, repository/, service/, config/)
+3. ✅ Copied frontend controllers to controller module (ui/controller/, ui/image/)
+4. ✅ Moved FXML and image assets to view module (resources/fxml/, resources/images/)
+5. ✅ Created build.gradle.kts for each module with correct dependencies
+6. ✅ Updated settings.gradle.kts to reference three modules instead of backend/frontend
+7. ✅ Removed old src/backend/ and src/frontend/ directories
+8. ✅ Verified build succeeds: `./gradlew clean build` ✓
+9. ✅ Verified all tests pass: `./gradlew test` ✓
+10. ✅ Updated README.adoc with new project structure and build commands
+11. ✅ Documented in chat.md using Template A
+
+## Open Questions (Blocking)
+- None
