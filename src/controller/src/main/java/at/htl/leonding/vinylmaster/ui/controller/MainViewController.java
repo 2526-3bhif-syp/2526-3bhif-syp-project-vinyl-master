@@ -104,12 +104,19 @@ public class MainViewController {
     @FXML
     private ComboBox<String> genreFilterComboBox;
 
+    @FXML
+    private Button favoritesFilterButton;
+
+    @FXML
+    private Button favoriteDetailButton;
+
     private final VinylServiceImpl vinylService;
     private final CoverImageService coverImageService;
     private final ObservableList<Vinyl> vinylList;
     private final Image listPlaceholderImage;
     private final Image detailPlaceholderImage;
     private final Map<String, Image> imageCache;
+    private boolean showFavoritesOnly = false;
     private Pane addVinylFormPane;
     private javafx.collections.transformation.FilteredList<Vinyl> filteredVinyls;
     private javafx.collections.transformation.SortedList<Vinyl> sortedVinyls;
@@ -162,6 +169,7 @@ public class MainViewController {
         notesArea.setDisable(true);
         editVinylButton.setDisable(true);
         deleteVinylButton.setDisable(true);
+        favoriteDetailButton.setDisable(true);
         closeDetailsButton.setDisable(true);
         storageLocationField.focusedProperty().addListener((obs, oldVal, focused) -> {
             if (!focused) persistSelectedDetails();
@@ -171,6 +179,7 @@ public class MainViewController {
         });
         editVinylButton.setOnAction(event -> handleEditVinyl());
         deleteVinylButton.setOnAction(event -> handleDeleteVinyl());
+        favoriteDetailButton.setOnAction(event -> handleToggleFavorite());
         closeDetailsButton.setOnAction(event -> handleCloseDetailsPanel());
         showVinylDetails(null);
     }
@@ -198,6 +207,22 @@ public class MainViewController {
         genreFilterComboBox.setValue(ALL_FILTER_OPTION);
         genreFilterComboBox.getSelectionModel().selectedItemProperty()
                 .addListener((obs, oldVal, newVal) -> applyFilters());
+
+        favoritesFilterButton.setOnAction(event -> {
+            showFavoritesOnly = !showFavoritesOnly;
+            applyFavoritesButtonStyle();
+            applyFilters();
+        });
+    }
+
+    private void applyFavoritesButtonStyle() {
+        if (showFavoritesOnly) {
+            favoritesFilterButton.setText("★ Favorites Only");
+            favoritesFilterButton.setStyle("-fx-background-color: #8c525c; -fx-text-fill: #e3e6db; -fx-border-color: #8c525c; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 4 12; -fx-font-size: 13px;");
+        } else {
+            favoritesFilterButton.setText("☆ Favorites Only");
+            favoritesFilterButton.setStyle("-fx-background-color: #e3e6db; -fx-text-fill: #8c525c; -fx-border-color: #8c525c; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 4 12; -fx-font-size: 13px;");
+        }
     }
 
     private <T> void styleComboBoxText(ComboBox<T> comboBox) {
@@ -292,6 +317,9 @@ public class MainViewController {
 
         filteredVinyls.setPredicate(vinyl -> {
             if (vinyl == null) {
+                return false;
+            }
+            if (showFavoritesOnly && !vinyl.isFavorite()) {
                 return false;
             }
             if (!matchesSelectedFilter(vinyl.getArtist(), selectedArtist)) {
@@ -424,6 +452,9 @@ public class MainViewController {
             notesArea.setDisable(true);
             editVinylButton.setDisable(true);
             deleteVinylButton.setDisable(true);
+            favoriteDetailButton.setDisable(true);
+            favoriteDetailButton.setText("☆");
+            favoriteDetailButton.setStyle("-fx-background-color: #e3e6db; -fx-text-fill: #8c525c; -fx-border-color: #8c525c; -fx-border-radius: 6; -fx-background-radius: 6; -fx-font-size: 16px; -fx-padding: 4 10;");
             closeDetailsButton.setDisable(true);
             return;
         }
@@ -448,6 +479,8 @@ public class MainViewController {
         notesArea.setText(vinyl.getNotes() == null ? "" : vinyl.getNotes());
         editVinylButton.setDisable(false);
         deleteVinylButton.setDisable(false);
+        favoriteDetailButton.setDisable(false);
+        updateFavoriteDetailButton(vinyl.isFavorite());
         closeDetailsButton.setDisable(false);
         playDetailsPanelSlideInAnimation();
     }
@@ -566,6 +599,29 @@ public class MainViewController {
         }
     }
 
+    private void handleToggleFavorite() {
+        if (selectedVinyl == null) {
+            return;
+        }
+        Vinyl updated = vinylService.toggleFavorite(selectedVinyl.getId());
+        selectedVinyl.setFavorite(updated.isFavorite());
+        updateFavoriteDetailButton(selectedVinyl.isFavorite());
+        vinylListView.refresh();
+        if (showFavoritesOnly) {
+            applyFilters();
+        }
+    }
+
+    private void updateFavoriteDetailButton(boolean isFavorite) {
+        if (isFavorite) {
+            favoriteDetailButton.setText("★");
+            favoriteDetailButton.setStyle("-fx-background-color: #FFB800; -fx-text-fill: white; -fx-border-color: #FFB800; -fx-border-radius: 6; -fx-background-radius: 6; -fx-font-size: 16px; -fx-padding: 4 10;");
+        } else {
+            favoriteDetailButton.setText("☆");
+            favoriteDetailButton.setStyle("-fx-background-color: #e3e6db; -fx-text-fill: #8c525c; -fx-border-color: #8c525c; -fx-border-radius: 6; -fx-background-radius: 6; -fx-font-size: 16px; -fx-padding: 4 10;");
+        }
+    }
+
     private void handleCloseDetailsPanel() {
         vinylListView.getSelectionModel().clearSelection();
         showVinylDetails(null);
@@ -578,6 +634,7 @@ public class MainViewController {
         private final Label artistLabel;
         private final Label genreLabel;
         private final Label priceLabel;
+        private final Button cellFavoriteButton;
 
         public VinylListCell() {
             super();
@@ -586,24 +643,44 @@ public class MainViewController {
             imageView.setFitHeight(50);
             imageView.setPreserveRatio(true);
             setStyle("-fx-background-color: transparent; -fx-padding: 2 0 2 0;");
-            
+
             titleLabel = new Label();
             titleLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 14px; -fx-text-fill: #8c525c;");
-            
+
             artistLabel = new Label();
             artistLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #8c525c;");
 
             genreLabel = new Label();
             genreLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #8c525c;");
-            
+
             priceLabel = new Label();
             priceLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #8c525c;");
-            
+
+            cellFavoriteButton = new Button("☆");
+            cellFavoriteButton.setStyle("-fx-background-color: transparent; -fx-border-color: transparent; -fx-font-size: 18px; -fx-padding: 0 4; -fx-text-fill: #8c525c; -fx-cursor: hand;");
+            cellFavoriteButton.setOnAction(e -> {
+                Vinyl vinyl = getItem();
+                if (vinyl != null) {
+                    Vinyl updated = vinylService.toggleFavorite(vinyl.getId());
+                    vinyl.setFavorite(updated.isFavorite());
+                    if (vinyl.equals(selectedVinyl)) {
+                        updateFavoriteDetailButton(vinyl.isFavorite());
+                    }
+                    vinylListView.refresh();
+                    if (showFavoritesOnly) {
+                        applyFilters();
+                    }
+                }
+            });
+
             VBox textBox = new VBox(5, titleLabel, artistLabel, genreLabel);
             textBox.setPadding(new Insets(0, 10, 0, 10));
             HBox.setHgrow(textBox, Priority.ALWAYS);
-            
-            content = new HBox(10, imageView, textBox, priceLabel);
+
+            VBox rightCol = new VBox(2, cellFavoriteButton, priceLabel);
+            rightCol.setAlignment(javafx.geometry.Pos.CENTER_RIGHT);
+
+            content = new HBox(10, imageView, textBox, rightCol);
             content.setPadding(new Insets(10));
             content.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
             applySelectionStyle(false);
@@ -616,13 +693,21 @@ public class MainViewController {
                 setGraphic(null);
             } else {
                 imageView.setImage(loadCoverImage(vinyl, 50, 50));
-                
+
                 titleLabel.setText(vinyl.getTitle());
                 artistLabel.setText(vinyl.getArtist());
                 genreLabel.setText("Genre: " + safeText(vinyl.getGenre()));
                 priceLabel.setText(vinyl.getPrice() != null ? vinyl.getPrice() + " €" : "");
-                applySelectionStyle(isSelected());
 
+                if (vinyl.isFavorite()) {
+                    cellFavoriteButton.setText("★");
+                    cellFavoriteButton.setStyle("-fx-background-color: transparent; -fx-border-color: transparent; -fx-font-size: 18px; -fx-padding: 0 4; -fx-text-fill: #FFB800; -fx-cursor: hand;");
+                } else {
+                    cellFavoriteButton.setText("☆");
+                    cellFavoriteButton.setStyle("-fx-background-color: transparent; -fx-border-color: transparent; -fx-font-size: 18px; -fx-padding: 0 4; -fx-text-fill: #8c525c; -fx-cursor: hand;");
+                }
+
+                applySelectionStyle(isSelected());
                 setGraphic(content);
             }
         }

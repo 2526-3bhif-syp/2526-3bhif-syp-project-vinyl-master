@@ -13,6 +13,7 @@ public class Vinyl {
     private String imagePath;
     private String storageLocation;
     private String notes;
+    private boolean favorite;
 
     public Vinyl() {
     }
@@ -118,6 +119,14 @@ public class Vinyl {
         this.notes = notes;
     }
 
+    public boolean isFavorite() {
+        return favorite;
+    }
+
+    public void setFavorite(boolean favorite) {
+        this.favorite = favorite;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -143,6 +152,7 @@ public class Vinyl {
                 ", imagePath='" + imagePath + '\'' +
                 ", storageLocation='" + storageLocation + '\'' +
                 ", notes='" + notes + '\'' +
+                ", favorite=" + favorite +
                 '}';
     }
 }

@@ -105,6 +105,7 @@ public class FileVinylRepository implements VinylRepository {
                         existing.setImagePath(vinyl.getImagePath());
                         existing.setStorageLocation(vinyl.getStorageLocation());
                         existing.setNotes(vinyl.getNotes());
+                        existing.setFavorite(vinyl.isFavorite());
                     });
         }
         saveVinyls();

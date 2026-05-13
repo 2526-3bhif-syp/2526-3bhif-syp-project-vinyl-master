@@ -27,14 +27,28 @@
                 <Button fx:id="addVinylButton" text="+ Add Vinyl"
                         style="-fx-background-color: #8c525c; -fx-text-fill: #e3e6db; -fx-font-size: 14px; -fx-font-weight: bold; -fx-background-radius: 8; -fx-padding: 9 18;"/>
             </HBox>
-            <HBox alignment="CENTER_RIGHT" spacing="10">
+            <HBox alignment="BOTTOM_LEFT" spacing="10">
+                <VBox spacing="3">
+                    <Label text="Favorites" style="-fx-text-fill: #8c525c; -fx-font-size: 11px;"/>
+                    <Button fx:id="favoritesFilterButton" text="☆ Favorites Only" prefWidth="170" prefHeight="32"
+                            style="-fx-background-color: #e3e6db; -fx-text-fill: #8c525c; -fx-border-color: #8c525c; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 4 8;"/>
+                </VBox>
                 <Region HBox.hgrow="ALWAYS"/>
-                <ComboBox fx:id="artistFilterComboBox" promptText="Filter by artist" prefWidth="190"
-                          style="-fx-background-color: #e3e6db; -fx-text-fill: #8c525c; -fx-prompt-text-fill: #8c525c; -fx-background-radius: 8; -fx-border-radius: 8; -fx-border-color: #8c525c; -fx-padding: 4 8;"/>
-                <ComboBox fx:id="genreFilterComboBox" promptText="Filter by genre" prefWidth="190"
-                          style="-fx-background-color: #e3e6db; -fx-text-fill: #8c525c; -fx-prompt-text-fill: #8c525c; -fx-background-radius: 8; -fx-border-radius: 8; -fx-border-color: #8c525c; -fx-padding: 4 8;"/>
-                <ComboBox fx:id="sortComboBox" promptText="Sort by..." prefWidth="170"
-                          style="-fx-background-color: #e3e6db; -fx-text-fill: #8c525c; -fx-prompt-text-fill: #8c525c; -fx-background-radius: 8; -fx-border-radius: 8; -fx-border-color: #8c525c; -fx-padding: 4 8;"/>
+                <VBox spacing="3">
+                    <Label text="Artist" style="-fx-text-fill: #8c525c; -fx-font-size: 11px;"/>
+                    <ComboBox fx:id="artistFilterComboBox" promptText="All artists" prefWidth="170" prefHeight="32"
+                              style="-fx-background-color: #e3e6db; -fx-text-fill: #8c525c; -fx-prompt-text-fill: #8c525c; -fx-background-radius: 8; -fx-border-radius: 8; -fx-border-color: #8c525c; -fx-padding: 4 8;"/>
+                </VBox>
+                <VBox spacing="3">
+                    <Label text="Genre" style="-fx-text-fill: #8c525c; -fx-font-size: 11px;"/>
+                    <ComboBox fx:id="genreFilterComboBox" promptText="All genres" prefWidth="170" prefHeight="32"
+                              style="-fx-background-color: #e3e6db; -fx-text-fill: #8c525c; -fx-prompt-text-fill: #8c525c; -fx-background-radius: 8; -fx-border-radius: 8; -fx-border-color: #8c525c; -fx-padding: 4 8;"/>
+                </VBox>
+                <VBox spacing="3">
+                    <Label text="Sort" style="-fx-text-fill: #8c525c; -fx-font-size: 11px;"/>
+                    <ComboBox fx:id="sortComboBox" promptText="Sort by..." prefWidth="170" prefHeight="32"
+                              style="-fx-background-color: #e3e6db; -fx-text-fill: #8c525c; -fx-prompt-text-fill: #8c525c; -fx-background-radius: 8; -fx-border-radius: 8; -fx-border-color: #8c525c; -fx-padding: 4 8;"/>
+                </VBox>
             </HBox>
         </VBox>
         
@@ -68,6 +82,8 @@
                                         style="-fx-background-color: #8c525c; -fx-text-fill: #e3e6db; -fx-font-weight: bold; -fx-background-radius: 6;"/>
                                 <Button fx:id="deleteVinylButton" text="Delete Vinyl"
                                         style="-fx-background-color: #8c525c; -fx-text-fill: #e3e6db; -fx-border-color: #8c525c; -fx-border-radius: 6; -fx-background-radius: 6;"/>
+                                <Button fx:id="favoriteDetailButton" text="☆"
+                                        style="-fx-background-color: #e3e6db; -fx-text-fill: #8c525c; -fx-border-color: #8c525c; -fx-border-radius: 6; -fx-background-radius: 6; -fx-font-size: 16px; -fx-padding: 4 10;"/>
                             </HBox>
                         </VBox>
                     </HBox>
