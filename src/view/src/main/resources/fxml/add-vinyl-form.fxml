@@ -36,17 +36,30 @@
                       style="-fx-background-color: #e3e6db; -fx-text-fill: #8c525c; -fx-prompt-text-fill: #8c525c; -fx-background-radius: 6; -fx-border-radius: 6; -fx-border-color: #8c525c;"/>
         </VBox>
         
-        <VBox spacing="5">
-            <Label text="Year *" style="-fx-font-weight: bold; -fx-text-fill: #8c525c;"/>
-            <TextField fx:id="yearField" promptText="Enter year (e.g., 1975)"
-                       style="-fx-background-color: #e3e6db; -fx-text-fill: #8c525c; -fx-prompt-text-fill: #8c525c; -fx-background-radius: 6; -fx-border-radius: 6; -fx-border-color: #8c525c;"/>
-        </VBox>
-        
-        <VBox spacing="5">
-            <Label text="Price (€)" style="-fx-font-weight: bold; -fx-text-fill: #8c525c;"/>
-            <TextField fx:id="priceField" promptText="Enter price in euros"
-                       style="-fx-background-color: #e3e6db; -fx-text-fill: #8c525c; -fx-prompt-text-fill: #8c525c; -fx-background-radius: 6; -fx-border-radius: 6; -fx-border-color: #8c525c;"/>
-        </VBox>
+        <HBox spacing="10">
+            <VBox HBox.hgrow="ALWAYS" spacing="5">
+                <Label text="Year *" style="-fx-font-weight: bold; -fx-text-fill: #8c525c;"/>
+                <TextField fx:id="yearField" promptText="Enter year (e.g., 1975)"
+                           style="-fx-background-color: #e3e6db; -fx-text-fill: #8c525c; -fx-prompt-text-fill: #8c525c; -fx-background-radius: 6; -fx-border-radius: 6; -fx-border-color: #8c525c;"/>
+            </VBox>
+            <VBox HBox.hgrow="ALWAYS" spacing="5">
+                <Label text="Price (€)" style="-fx-font-weight: bold; -fx-text-fill: #8c525c;"/>
+                <TextField fx:id="priceField" promptText="Enter price in euros"
+                           style="-fx-background-color: #e3e6db; -fx-text-fill: #8c525c; -fx-prompt-text-fill: #8c525c; -fx-background-radius: 6; -fx-border-radius: 6; -fx-border-color: #8c525c;"/>
+            </VBox>
+        </HBox>
+
+        <HBox spacing="10" alignment="CENTER_LEFT">
+            <VBox HBox.hgrow="ALWAYS" spacing="5">
+                <Label text="Condition" style="-fx-font-weight: bold; -fx-text-fill: #8c525c;"/>
+                <ComboBox fx:id="conditionComboBox" promptText="Select condition" prefWidth="220"
+                          style="-fx-background-color: #e3e6db; -fx-text-fill: #8c525c; -fx-prompt-text-fill: #8c525c; -fx-background-radius: 6; -fx-border-radius: 6; -fx-border-color: #8c525c;"/>
+            </VBox>
+            <VBox HBox.hgrow="ALWAYS" spacing="5" alignment="BOTTOM_LEFT">
+                <CheckBox fx:id="wantlistCheckBox" text="Add to Wantlist"
+                          style="-fx-text-fill: #8c525c; -fx-font-weight: bold; -fx-padding: 8 0 8 10;"/>
+            </VBox>
+        </HBox>
 
         <VBox spacing="5">
             <Label text="Cover Image (optional)" style="-fx-font-weight: bold; -fx-text-fill: #8c525c;"/>

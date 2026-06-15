@@ -55,6 +55,12 @@ public class AddVinylFormController {
     
     @FXML
     private TextField priceField;
+
+    @FXML
+    private ComboBox<String> conditionComboBox;
+
+    @FXML
+    private CheckBox wantlistCheckBox;
     
     @FXML
     private Button saveButton;
@@ -96,6 +102,8 @@ public class AddVinylFormController {
     public void initialize() {
         loadGenres();
         styleGenreComboBoxText();
+        loadConditions();
+        styleConditionComboBoxText();
         setupValidation();
         setupImageSelection();
         saveButton.setOnAction(event -> handleSave());
@@ -125,6 +133,37 @@ public class AddVinylFormController {
         });
 
         genreComboBox.setCellFactory(listView -> new ListCell<>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                    setStyle("-fx-background-color: #e3e6db;");
+                } else {
+                    setText(item);
+                    setStyle("-fx-text-fill: #8c525c; -fx-background-color: #e3e6db;");
+                }
+            }
+        });
+    }
+
+    private void loadConditions() {
+        conditionComboBox.getItems().clear();
+        conditionComboBox.getItems().addAll("M", "NM", "VG+", "VG", "G", "F", "P");
+        conditionComboBox.setStyle(BASE_COMBO_STYLE);
+    }
+
+    private void styleConditionComboBoxText() {
+        conditionComboBox.setButtonCell(new ListCell<>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(empty || item == null ? null : item);
+                setStyle("-fx-text-fill: #8c525c; -fx-background-color: transparent;");
+            }
+        });
+
+        conditionComboBox.setCellFactory(listView -> new ListCell<>() {
             @Override
             protected void updateItem(String item, boolean empty) {
                 super.updateItem(item, empty);
@@ -410,6 +449,14 @@ public class AddVinylFormController {
                 vinyl.setPrice(null);
             }
 
+            vinyl.setWantlist(wantlistCheckBox.isSelected());
+            String condition = conditionComboBox.getValue();
+            if (condition != null && !condition.trim().isEmpty()) {
+                vinyl.setCondition(condition.trim());
+            } else {
+                vinyl.setCondition(null);
+            }
+
             Vinyl savedVinyl;
             if (editMode) {
                 savedVinyl = vinylService.updateVinyl(vinyl);
@@ -493,6 +540,8 @@ public class AddVinylFormController {
         genreComboBox.setValue(vinyl.getGenre());
         yearField.setText(vinyl.getYear() == null ? "" : vinyl.getYear().toString());
         priceField.setText(vinyl.getPrice() == null ? "" : vinyl.getPrice().toString());
+        wantlistCheckBox.setSelected(vinyl.isWantlist());
+        conditionComboBox.setValue(vinyl.getCondition());
         updateImagePreview();
         updateSubmitButtonState();
     }
