@@ -14,6 +14,8 @@ public class Vinyl {
     private String storageLocation;
     private String notes;
     private boolean favorite;
+    private boolean wantlist;
+    private String condition;
 
     public Vinyl() {
     }
@@ -36,6 +38,11 @@ public class Vinyl {
 
     public Vinyl(Long id, String title, String artist, String genre, Integer year, BigDecimal price,
                  String imagePath, String storageLocation, String notes) {
+        this(id, title, artist, genre, year, price, imagePath, storageLocation, notes, false, false, null);
+    }
+
+    public Vinyl(Long id, String title, String artist, String genre, Integer year, BigDecimal price,
+                 String imagePath, String storageLocation, String notes, boolean favorite, boolean wantlist, String condition) {
         this.id = id;
         this.title = title;
         this.artist = artist;
@@ -45,6 +52,9 @@ public class Vinyl {
         this.imagePath = imagePath;
         this.storageLocation = storageLocation;
         this.notes = notes;
+        this.favorite = favorite;
+        this.wantlist = wantlist;
+        this.condition = condition;
     }
 
     public Long getId() {
@@ -127,6 +137,22 @@ public class Vinyl {
         this.favorite = favorite;
     }
 
+    public boolean isWantlist() {
+        return wantlist;
+    }
+
+    public void setWantlist(boolean wantlist) {
+        this.wantlist = wantlist;
+    }
+
+    public String getCondition() {
+        return condition;
+    }
+
+    public void setCondition(String condition) {
+        this.condition = condition;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -153,6 +179,8 @@ public class Vinyl {
                 ", storageLocation='" + storageLocation + '\'' +
                 ", notes='" + notes + '\'' +
                 ", favorite=" + favorite +
+                ", wantlist=" + wantlist +
+                ", condition='" + condition + '\'' +
                 '}';
     }
 }
