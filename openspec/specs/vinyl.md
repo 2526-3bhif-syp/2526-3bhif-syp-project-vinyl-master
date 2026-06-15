@@ -18,6 +18,8 @@ Each vinyl record contains the following metadata:
 | `storageLocation` | String | No | Free-text string representing the physical location (e.g. "Shelf A, Box 3"). |
 | `notes` | String | No | Free-text notes for user-specific collection details. |
 | `favorite` | boolean | Yes (defaults to `false`) | Flag indicating if the record is starred/favorited by the collector. |
+| `wantlist` | boolean | Yes (defaults to `false`) | Flag indicating if the record is in the user's wishlist/wantlist. |
+| `condition` | String | No | Physical condition grade (value from standard Goldmine grading: M, NM, VG+, VG, G, F, P). |
 
 ---
 

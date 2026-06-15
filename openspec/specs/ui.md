@@ -10,6 +10,7 @@ The application consists of a single primary window, designed with a custom warm
 - **Title Label**: Displays "Vinyl Collection".
 - **Search Field**: Real-time filtering text box (filters by title, artist, or genre).
 - **Add Vinyl Button**: Opens the modal add/edit vinyl form.
+- **View Mode Toggle Button**: A button ("📋 Collection" / "📝 Wantlist") to toggle between displaying owned collection records and wanted records.
 - **Favorites Filter Button**: A toggle button ("☆ Favorites Only" / "★ Favorites Only") to filter the collection list.
 - **Artist Filter Dropdown**: ComboBox to select a specific artist.
 - **Genre Filter Dropdown**: ComboBox to select a specific genre.
@@ -22,7 +23,7 @@ The application consists of a single primary window, designed with a custom warm
 
 ### 1.3 Record Details Panel (Right Slide-In Panel)
 - **Visibility**: Hidden by default. Slides in from the right with a fade-and-translate animation (220ms duration) only when a record is selected.
-- **Metadata Fields**: Displays large Title, Artist, Genre, Year, and Price.
+- **Metadata Fields**: Displays large Title, Artist, Genre, Condition, Year, and Price.
 - **Interactive Fields**: Editable text fields for **Storage Location** and **Notes** (auto-persisted to disk immediately on focus loss).
 - **Actions**:
   - `Edit Vinyl`: Opens the edit form modal with the selected record's current values.
@@ -42,6 +43,8 @@ When adding a new record or editing an existing one, a full-screen semi-transpar
 - **Year**: Required integer text field.
 - **Price**: Optional decimal text field.
 - **Genre**: Optional dropdown (populated from custom user genres).
+- **Condition**: Optional dropdown menu containing Goldmine Grading conditions.
+- **Add to Wantlist**: CheckBox specifying if the record is in the wantlist.
 - **Cover Image Drop Area**: Visual drag-and-drop region with options to:
   - Select an image via a native file chooser dialog.
   - Drag and drop an image file.
