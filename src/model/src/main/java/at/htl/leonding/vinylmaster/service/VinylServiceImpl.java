@@ -50,6 +50,13 @@ public class VinylServiceImpl implements VinylService {
         vinylRepository.deleteById(id);
     }
 
+    @Override
+    public Vinyl toggleFavorite(Long id) {
+        Vinyl vinyl = getVinylById(id);
+        vinyl.setFavorite(!vinyl.isFavorite());
+        return vinylRepository.save(vinyl);
+    }
+
     private void validateVinyl(Vinyl vinyl) throws ValidationException {
         if (vinyl.getTitle() == null || vinyl.getTitle().trim().isEmpty()) {
             throw new ValidationException("title", "Title is required");

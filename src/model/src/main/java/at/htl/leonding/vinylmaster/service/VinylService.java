@@ -10,4 +10,5 @@ public interface VinylService {
     List<Vinyl> getAllVinyls();
     Vinyl getVinylById(Long id);
     void deleteVinyl(Long id);
+    Vinyl toggleFavorite(Long id);
 }
