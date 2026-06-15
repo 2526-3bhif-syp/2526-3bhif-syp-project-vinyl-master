@@ -820,3 +820,32 @@ As a collector I want to assign a physical condition grade to my vinyl records s
 ### Effort and Priority
 Effort: 2
 Priority: Medium
+
+---
+
+Using Template B
+
+## Session Notes - 2026-06-15
+
+### Issue Context
+- **Issue:** #25 (Wantlist) and #26 (Zustands-Bewertung)
+- **Scope in this session:** Implement Wantlist and Goldmine Grading features: update domain entity, edit creation/modification form UI layout, adapt MainViewController filter logic and cell markers, and update OpenSpec spec files.
+
+### Changes Implemented
+- Added `wantlist` (boolean) and `condition` (String) fields to `Vinyl` model with chained constructors, getters, setters, and updated `toString`.
+- Modified `add-vinyl-form.fxml` to place Year and Price side-by-side and added Condition dropdown and Wantlist checkbox.
+- Updated `AddVinylFormController.java` to set up, style, and save the new fields.
+- Modified `main-view.fxml` and `MainViewController.java` to add a collection/wantlist toggle button in the toolbar, display the condition in the details panel, and visually label wantlist items in the list view.
+- Updated `openspec/specs/vinyl.md` and `openspec/specs/ui.md` specifications.
+
+### Questions and Answers (Session)
+- **Q:** How should wantlist items be visually marked?
+  - **A:** Appended ` (Wantlist)` to their title in the collection list.
+
+### Validation / Outcome
+- Verified build and executed tests: `./gradlew test` compiles and passes successfully.
+- Current status: **done** for implemented scope in this session.
+
+### Next Steps
+- Push changes to origin remote repository.
+- Close Issue #25 and Issue #26 on GitHub.
