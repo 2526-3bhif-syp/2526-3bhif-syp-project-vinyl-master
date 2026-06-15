@@ -740,3 +740,33 @@ Update the project structure according to Issue #16 by splitting folders from th
 
 ## Open Questions (Blocking)
 - None
+
+---
+
+Using Template B
+
+## Session Notes - 2026-06-15
+
+### Issue Context
+- **Issue:** #24 - project structure with openspec
+- **Scope in this session:** Remodel project to meet OpenSpec specifications: merge main updates into dev, add domain specs, genre specs, and UI specs, configure config.yaml, and define AGENTS.md.
+
+### Changes Implemented
+- Merged latest updates (favorites, etc.) from `main` into the `dev` branch.
+- Updated `openspec/config.yaml` to specify project context and MVC conventions.
+- Created `openspec/specs/vinyl.md` defining the Vinyl data model, validations, duplicate checks, and JSON storage layout.
+- Created `openspec/specs/genre.md` defining the genre representation and persistence.
+- Created `openspec/specs/ui.md` detailing the visual layout, sliding details panel, modal overlay validation, image uploading/scaling (256x256 JPG), and sorting/filtering rules.
+- Created `openspec/AGENTS.md` outlining gradle commands, Java 21 compilation constraints, and IntelliJ JBR compiler paths.
+
+### Questions and Answers (Session)
+- **Q:** How do we compile and test without local JRE conflicts?
+  - **A:** Configured Java 21 environment guidelines pointing to IntelliJ's JetBrains Runtime (JBR) JDK 21 folder for compilation.
+
+### Validation / Outcome
+- Verified build and executed tests: `./gradlew test` passes all tests successfully.
+- Current status: **done** for implemented scope in this session.
+
+### Next Steps
+- Push changes to origin remote repository.
+- Close Issue #24 on GitHub.
