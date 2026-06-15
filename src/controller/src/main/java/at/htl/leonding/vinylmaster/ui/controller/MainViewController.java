@@ -110,6 +110,12 @@ public class MainViewController {
     @FXML
     private Button favoriteDetailButton;
 
+    @FXML
+    private Button viewModeFilterButton;
+
+    @FXML
+    private Label detailConditionValue;
+
     private final VinylServiceImpl vinylService;
     private final CoverImageService coverImageService;
     private final ObservableList<Vinyl> vinylList;
@@ -117,6 +123,7 @@ public class MainViewController {
     private final Image detailPlaceholderImage;
     private final Map<String, Image> imageCache;
     private boolean showFavoritesOnly = false;
+    private boolean showWantlistOnly = false;
     private Pane addVinylFormPane;
     private javafx.collections.transformation.FilteredList<Vinyl> filteredVinyls;
     private javafx.collections.transformation.SortedList<Vinyl> sortedVinyls;
@@ -213,6 +220,23 @@ public class MainViewController {
             applyFavoritesButtonStyle();
             applyFilters();
         });
+
+        applyViewModeButtonStyle();
+        viewModeFilterButton.setOnAction(event -> {
+            showWantlistOnly = !showWantlistOnly;
+            applyViewModeButtonStyle();
+            applyFilters();
+        });
+    }
+
+    private void applyViewModeButtonStyle() {
+        if (showWantlistOnly) {
+            viewModeFilterButton.setText("📝 Wantlist");
+            viewModeFilterButton.setStyle("-fx-background-color: #8c525c; -fx-text-fill: #e3e6db; -fx-border-color: #8c525c; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 4 12; -fx-font-size: 13px;");
+        } else {
+            viewModeFilterButton.setText("📋 Collection");
+            viewModeFilterButton.setStyle("-fx-background-color: #e3e6db; -fx-text-fill: #8c525c; -fx-border-color: #8c525c; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 4 12; -fx-font-size: 13px;");
+        }
     }
 
     private void applyFavoritesButtonStyle() {
@@ -317,6 +341,9 @@ public class MainViewController {
 
         filteredVinyls.setPredicate(vinyl -> {
             if (vinyl == null) {
+                return false;
+            }
+            if (vinyl.isWantlist() != showWantlistOnly) {
                 return false;
             }
             if (showFavoritesOnly && !vinyl.isFavorite()) {
@@ -444,6 +471,7 @@ public class MainViewController {
             detailTitleValue.setText("-");
             detailArtistValue.setText("-");
             detailGenreValue.setText("-");
+            detailConditionValue.setText("-");
             detailYearValue.setText("-");
             detailPriceValue.setText("-");
             storageLocationField.clear();
@@ -469,6 +497,7 @@ public class MainViewController {
         detailTitleValue.setText(safeText(vinyl.getTitle()));
         detailArtistValue.setText(safeText(vinyl.getArtist()));
         detailGenreValue.setText(safeText(vinyl.getGenre()));
+        detailConditionValue.setText(safeText(vinyl.getCondition()));
         detailYearValue.setText(vinyl.getYear() == null ? "-" : vinyl.getYear().toString());
         detailPriceValue.setText(formatPrice(vinyl.getPrice()));
 
@@ -694,7 +723,11 @@ public class MainViewController {
             } else {
                 imageView.setImage(loadCoverImage(vinyl, 50, 50));
 
-                titleLabel.setText(vinyl.getTitle());
+                if (vinyl.isWantlist()) {
+                    titleLabel.setText(vinyl.getTitle() + " (Wantlist)");
+                } else {
+                    titleLabel.setText(vinyl.getTitle());
+                }
                 artistLabel.setText(vinyl.getArtist());
                 genreLabel.setText("Genre: " + safeText(vinyl.getGenre()));
                 priceLabel.setText(vinyl.getPrice() != null ? vinyl.getPrice() + " €" : "");

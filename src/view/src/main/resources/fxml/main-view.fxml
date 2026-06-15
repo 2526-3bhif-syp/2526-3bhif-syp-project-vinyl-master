@@ -29,6 +29,11 @@
             </HBox>
             <HBox alignment="BOTTOM_LEFT" spacing="10">
                 <VBox spacing="3">
+                    <Label text="View Mode" style="-fx-text-fill: #8c525c; -fx-font-size: 11px;"/>
+                    <Button fx:id="viewModeFilterButton" text="📋 Collection" prefWidth="170" prefHeight="32"
+                            style="-fx-background-color: #e3e6db; -fx-text-fill: #8c525c; -fx-border-color: #8c525c; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 4 8;"/>
+                </VBox>
+                <VBox spacing="3">
                     <Label text="Favorites" style="-fx-text-fill: #8c525c; -fx-font-size: 11px;"/>
                     <Button fx:id="favoritesFilterButton" text="☆ Favorites Only" prefWidth="170" prefHeight="32"
                             style="-fx-background-color: #e3e6db; -fx-text-fill: #8c525c; -fx-border-color: #8c525c; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 4 8;"/>
@@ -91,6 +96,10 @@
                     <HBox spacing="6">
                         <Label text="Genre:" style="-fx-font-weight: bold; -fx-text-fill: #8c525c;"/>
                         <Label fx:id="detailGenreValue" text="-" style="-fx-text-fill: #8c525c;"/>
+                    </HBox>
+                    <HBox spacing="6">
+                        <Label text="Condition:" style="-fx-font-weight: bold; -fx-text-fill: #8c525c;"/>
+                        <Label fx:id="detailConditionValue" text="-" style="-fx-text-fill: #8c525c;"/>
                     </HBox>
                     <HBox spacing="6">
                         <Label text="Year:" style="-fx-font-weight: bold; -fx-text-fill: #8c525c;"/>
