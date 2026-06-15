@@ -770,3 +770,53 @@ Using Template B
 ### Next Steps
 - Push changes to origin remote repository.
 - Close Issue #24 on GitHub.
+
+---
+
+# Issue #25: Wantlist / Wunschliste
+
+## Issue Details
+**Title:** Wantlist / Wunschliste
+**Status:** Open
+**URL:** https://github.com/2526-3bhif-syp/2526-3bhif-syp-project-vinyl-master/issues/25
+
+---
+
+## Your Requirements
+
+As a collector I want to maintain a separate wantlist of vinyl records so that I can track albums I want to buy without mixing them into my active collection.
+
+### Acceptance Criteria
+- There is a toggle or separate view to switch between 'Collection' and 'Wantlist'
+- Adding a vinyl record allows marking it as 'Wantlist' (wantlist = true)
+- Records in the wantlist are excluded from standard collection statistics (e.g. total value)
+- The UI visually distinguishes wantlist items
+
+### Effort and Priority
+Effort: 3
+Priority: Medium
+
+---
+
+# Issue #26: Zustands-Bewertung (Goldmine Grading)
+
+## Issue Details
+**Title:** Zustands-Bewertung (Goldmine Grading)
+**Status:** Open
+**URL:** https://github.com/2526-3bhif-syp/2526-3bhif-syp-project-vinyl-master/issues/26
+
+---
+
+## Your Requirements
+
+As a collector I want to assign a physical condition grade to my vinyl records so that I can track the quality of my collection.
+
+### Acceptance Criteria
+- When adding or editing a record, the user can select a condition grade from a dropdown menu
+- The dropdown list contains standard Goldmine grades (M, NM, VG+, VG, G, F, P)
+- The selected condition is saved and persisted in the record details
+- The details panel displays the record's condition (e.g., "Condition: VG+")
+
+### Effort and Priority
+Effort: 2
+Priority: Medium
