@@ -1,20 +1,11 @@
 schema: spec-driven
 
-# Project context (optional)
-# This is shown to AI when creating artifacts.
-# Add your tech stack, conventions, style guides, domain knowledge, etc.
-# Example:
-#   context: |
-#     Tech stack: TypeScript, React, Node.js
-#     We use conventional commits
-#     Domain: e-commerce platform
-
-# Per-artifact rules (optional)
-# Add custom rules for specific artifacts.
-# Example:
-#   rules:
-#     proposal:
-#       - Keep proposals under 500 words
-#       - Always include a "Non-goals" section
-#     tasks:
-#       - Break tasks into chunks of max 2 hours
+context: |
+  Tech stack: Java 21, JavaFX 23, Jackson (JSON serialization), Gradle 8.11+
+  Architecture: Multi-module Gradle project following MVC pattern (modules: model, view, controller)
+  Data persistence: Local file-based JSON storage in project root (data/vinyls.json, data/genres.json)
+  Cover images: Scale/crop to 256x256 JPG and save to user-local directory (~/.vinylmaster/covers)
+  Conventions:
+    - Target Java version: 21 (run tests using a compatible JDK, e.g., IntelliJ's JBR)
+    - Domain entity validation: backend validation in service layer; basic format/required field validation in frontend UI controllers.
+    - Duplicate detection: same title + artist + year.
